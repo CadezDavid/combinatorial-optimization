@@ -1,0 +1,21 @@
+\newcommand{\sheet}{4}
+\input{Header.tex}
+
+\begin{document}
+
+\maketitle
+
+\begin{exercise}{1}
+    By greedily and heuristically looking at the graph we find the following
+    matching $M = \{ \{4, 15\}, \{1, 5\}, \{2, 6\}, \{7, 8\}, \{3, 10\}, \{9,
+    12\}, \{11, 16\} \}$. It has size $7$, so we can try to show $\nu(G) = 7$.
+    We can do that by finding a set $X$ such that $q_G(X) = |X| + 2$. Again
+    heuristically looking at the graph yields $X = \{1, 16, 8\}$, for which the
+    graph $G \setminus X$ contains $5$ odd components, namely $\{5\}$, $\{13\}$,
+    $\{11\}$, $\{2, 6, 7\}$, $\{3, 9, 10, 12, 14\}$. So $\max_{X \subseteq V(G)}
+    (q_G(X) - |X|) \geq 2$. But also, using Berge-Tutte formula and $\nu(G) \geq
+    7$, we have $\max_{X \subseteq V(G)} (q_G(X) - |X|) \leq 2$. So $\nu(G) = 7$
+    and $M$ is maximum.
+\end{exercise}
+
+\end{document}

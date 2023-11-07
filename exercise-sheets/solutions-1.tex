@@ -1,0 +1,68 @@
+\newcommand{\sheet}{1}
+\input{Header.tex}
+
+\begin{document}
+
+\maketitle
+
+\begin{exercise}{1}
+    We can define a graph in the following way:
+    Let $A = \{x_i\}_{i \in \N}$, $B = \{y_i\}_{i \in \N}$ and $E = \{ \{x_i,
+    y_{i+1} \} \mid i \in \N \} \cup \{ \{x_i, y_1\} \mid i \in \N \}$. Clearly
+    any subset of $A$ or $B$ satisfies Hall's condition.
+
+    Suppose it has a perfect matching $M$. Then $\{x_1, y_{i_0}\} \in M$ for
+    some $i_0 \in \N$. Since vertex $x_{i_0 + 1}$ is of degree $1$ and his only
+    neighbour is already matched, he cannot be covered. Therefore a perfect
+    matching $M$ cannot exist.
+\end{exercise}
+
+\begin{exercise}{2}
+    \begin{enumerate}[a)]
+        \item{} Suppose we have a bipartite graph $G = (A \dot\cup B, E)$, two
+            subsets $A' \subseteq A$ and $B' \subseteq B$ and matchings $M_{A'}$
+            and $M_{B'}$ that cover $A'$ and $B'$ respectively.
+
+            To create a matching that covers $A' \cup B'$ we can take the union
+            $M_{A'} \cup M_{B'}$ and pick out a subset in the following way.
+            First observe that the degree of every edge $v \in V(G)$ is in $\{0,
+            1, 2\}$, so the graph $G' = (A \dot\cup B, M_{A'} \cup M_{B'})$ is
+            union of circles and paths.
+
+            Because the graph is bipartite, circles are of even length and we
+            can pick every second edge to get a matching that covers all edges
+            in a circle.
+
+            Regarding the paths, observe that edges alternate (w.r.t.\ coming
+            from $M_{A'}$ or $M_{B'}$). Let $(e_i = \{v_i, v_{i+1}\})_{i = 1,
+            \dots, k-1}$ be one of the paths in $G'$ (we assume this path to be
+            the whole connected component in $G'$).
+            \begin{itemize}
+                \item{} If $k$ is even, we can pick every second edge and get a
+                    perfect matching of the path.
+                \item{} If $k$ is odd: first and last vertex must lie in the
+                    same half of (bipartite) graph, WLOG $v_1, v_k \in A$.
+                    Assume $v_1, v_k \in A'$. Since edges alternate, either
+                    $e_1$ or $e_{k-1}$ lies in $M_{B'}$. WLOG $e_1 \in M_{B'}$.
+                    Because $v_1$ is covered by the matching $M_{A'}$, there
+                    must exist an edge $\{v_1, u\} \in M_{A'}$, which is a
+                    contradiction with assumption $v_1, v_k \in A'$. Therefore
+                    at least one of $v_1, v_k$ does not lie in $A'$ in which
+                    case we do not have to cover it. We can remove it and
+                    perfectly cover the remaining (even length) path.
+            \end{itemize}
+
+        \item{} Suppose for every non-empty $E' \subseteq E(G)$ we have $\tau(G -
+            E') < \tau(G)$. We want to show $E(G)$ is a matching in $G$.
+
+            Let $M$ be the maximum matching in bipartite graph $G$. By Königs
+            theorem we have $\tau(G) = \nu(G)$. Take an edge $\{u, v\} \in E(G)
+            \setminus M$. Matching $M$ is still a maximum matching in $G - \{u,
+            v\}$ and thus $\nu(G) = \nu(G - \{u, v\})$. But according to the
+            assumption $\tau(G - \{u, v\}) < \tau(G) = \nu(G - \{u, v\})$, which
+            cannot hold. Therefore $E(G)$ must be equal to $M$ and thus a
+            matching.
+    \end{enumerate}
+\end{exercise}
+
+\end{document}

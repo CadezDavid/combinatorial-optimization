@@ -1,0 +1,46 @@
+\documentclass{article}
+
+\usepackage[english, german]{babel}
+\usepackage{amsthm,amssymb,amsmath,mathrsfs,mathtools}
+\usepackage[shortlabels]{enumitem}
+\usepackage{algpseudocode}
+\usepackage{hyperref}
+\usepackage{tikz}
+\usepackage{tikz-cd}
+
+% \usepackage[tmargin=1.25in,bmargin=1.25in,lmargin=1.2in,rmargin=1.2in]{geometry}
+
+
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\Z}{\mathbb{Z}}
+
+\DeclareMathOperator{\id}{id}
+\DeclareMathOperator{\im}{im}
+\DeclareMathOperator{\GL}{GL}
+\DeclareMathOperator{\sgn}{sgn}
+\DeclareMathOperator{\Tor}{Tor}
+\DeclareMathOperator{\Sym}{Sym}
+\DeclareMathOperator{\coker}{coker}
+\DeclareMathOperator{\Quot}{Quot}
+\DeclareMathOperator{\supp}{supp}
+\DeclareMathOperator{\Hom}{Hom}
+\DeclareMathOperator{\Spec}{Spec}
+\DeclareMathOperator{\MinSpec}{MinSpec}
+
+
+\newenvironment{exercise}[1] {
+  \vspace{0.5cm}
+  \noindent \textbf{Exercise~{\sheet}.{#1}.}
+} {
+  \vspace{0.5cm}
+}
+\newenvironment{claim} { \par\noindent \textbf{Claim.} } { }
+\newenvironment{proof_claim} { \par\noindent \textbf{Proof of claim.} } { \qed{} (of claim) }
+
+\title{Combinatorial optimization\\Exercise sheet \sheet}
+\author{Solutions by: Anjana E Jeevanand and David Čadež}
+
+\date{\today}

@@ -1,0 +1,356 @@
+\newcommand{\sheet}{2}
+\input{Header.tex}
+
+\begin{document}
+
+\maketitle
+
+\begin{exercise}{1}
+    \begin{claim}
+        The number of ears in an odd decomposition of a graph is uniquely
+        determined by the following value:
+        \[
+            \text{\# of ears} = 1 + \frac{1}{2} \sum_{v \in V(G)} (\deg(v) - 2).
+        \]
+    \end{claim}
+    \begin{proof_claim}
+        With induction on the number of ears. Statement holds if $G$
+    is an odd circuit. Let $G = (\{r\}, \emptyset) + P_1 + \ldots + P_k$ be an
+    odd ear decomposition. For subgraph $G' = (\{r\}, \emptyset) + P_1 + \ldots
+    + P_{k-1}$ then holds 
+    \[
+        k - 1 = 1 + \frac{1}{2} \sum_{v \in V(G')} (\deg(v) - 2).
+    \]
+    By adding $P_k$ to $G'$ we add only vertices of degree $2$ (w.r.t.\ graph
+    $G$), but we do increase the degree of $2$ vertices (where path $P_k$
+    connects to $G'$) by $1$. Therefore
+    \begin{equation*}
+        \frac{1}{2} \sum_{v \in V(G)} (\deg(v) - 2) = 1 + \frac{1}{2} \sum_{v
+        \in V(G')} (\deg(v) - 2) = k
+    \end{equation*}
+    which proves the claim.
+    \end{proof_claim}
+
+    Claim proves that the number of ears is uniquely determined by the graph.
+\end{exercise}
+
+\begin{exercise}{4}
+    We have a graph $G$, with $n := |V(G)|$ even, and for any set $X \subseteq
+    V(G)$ with $|X| \leq \frac{3}{4} n$ we have
+    \begin{equation}\label{condition}
+        \left| \bigcup_{x \in X} \Gamma(x) \right| \geq \frac{4}{3} |X|.
+    \end{equation}
+    We have to prove that $G$ has a perfect matching.
+
+    Suppose it does not have a perfect matching. Then by Tutte's theorem there
+    exists a set $S \subseteq V(G)$ that violates Tutte condition, i.e. $q_G(S)
+    > |S|$.
+
+    First make the following simplification: let the set $S$ be maximal, in the
+    sense that there exists no other $S' \supseteq S$ with $q_G(S') > |S'|$. A
+    direct consequence of that is that $G \setminus S$ does not have even
+    connected components. If it did have an even connected component $C$, we
+    could take any $v \in C$ and define $S' := S \cup \{v\}$. Then $C \setminus
+    \{v\}$ would contain at least one odd connected component, simply because $C
+    \setminus \{v\}$ has odd number of vertices. This will be useful when
+    considering the case $|S| < \frac{n}{4}$.
+
+    \begin{itemize}
+        \item{}
+        First consider the case when $|S| \geq \frac{n}{4}$. Define the set
+        \[
+            I = \{ v \in G \setminus S \mid v\ \text{isolated in}\ G \setminus S \}.
+        \]
+        Using condition~\ref{condition} on the set $G \setminus S$ we get
+        \begin{equation}\label{equation_1}
+            \frac{4}{3} |G \setminus S| \leq \left|\bigcup_{x \in G \setminus S} \Gamma(x)
+            \right|.
+        \end{equation}
+
+        Observe that
+        \begin{equation*}
+            \bigcup_{x \in G \setminus S} \Gamma(x) \subseteq G \setminus I,
+        \end{equation*}
+        because elements of $I$ are by definition isolated in $G \setminus S$ and
+        therefore have no neighbors in $G \setminus S$. Therefore
+        \begin{equation}\label{equation_2}
+            \left|\bigcup_{x \in G \setminus S} \Gamma(x) \right| \leq | G \setminus
+            I | = n - |I|.
+        \end{equation}
+
+        We input equation~\ref{equation_2} in equation~\ref{equation_1} to get
+        \begin{equation}
+            \frac{4}{3} (n - |S|) \leq n - |I|
+        \end{equation}
+        and thus
+        \begin{equation}\label{equation_3}
+            |I| \leq \frac{4}{3} |S| - \frac{1}{3} n.
+        \end{equation}
+
+        Now we count all vertices in $G$ in the following way
+        \begin{equation}\label{count_vertices}
+            |I| + 3 \left(q_G(S) - |I|\right) + |S| \leq n.
+        \end{equation}
+            Here we summed isolated vertices ($|I|$), vertices contained in odd components of $G
+        \setminus S$ (using that their size is at least $3$ and there is at least
+        $q_G(S) - |I|$ of them) and elements in the set $S$.
+
+        We use equation~\ref{equation_3} and inequality $q_G(S) > |S|$ to
+        calculate
+        \begin{align*}
+            |I| + 3 \left(q_G(S) - |I|\right) + |S| &\leq n \\
+            -2 |I| + 3 q_G(S) + |S| &\leq n \\
+            -2 \left( \frac{4}{3} |S| - \frac{1}{3} n \right) + 3 q_G(S) + |S|
+            &\leq n \\
+            -2 \left( \frac{4}{3} |S| - \frac{1}{3} n \right) + 4 |S| &< n \\
+            - \frac{8}{3} |S| + \frac{2}{3} n + 4 |S| &< n \\
+            |S| &< \frac{n}{4} \\
+        \end{align*}
+            which is contradiction with assumption $|S| \geq \frac{n}{4}$.
+
+        \item{}
+        Suppose now $|S| < \frac{n}{4}$. First prove the following claim.
+        \begin{claim}\label{claim_1}
+            Let $G$ be a graph with $n := V(G)$ even. Assume it satisfies
+            condition~\ref{condition}. Then for every set $T \subseteq V(G)$
+            with $|T| \leq \frac{n}{4}$ the subgraph $G \setminus T$ has no
+            isolated vertices.
+        \end{claim}
+        \begin{proof_claim}
+            We suppose there exists a set $T$ with $|T| \leq \frac{n}{4}$ such
+            that $G \setminus T$ has an isolated vertex. Fix any isolated vertex
+            $v \in G \setminus T$.
+
+            Consider cases when $n$ divisible by $4$ and when it is not separately.
+            \begin{itemize}
+                \item{} Let $n = 4m$ for some $m \in \N$. We will pick a subset $X
+                    \subseteq G \setminus T$ of exactly the size $3m$
+                    (it exists because $T \leq \frac{n}{4}$). It fulfils the
+                    condition $|X| \leq \frac{3}{4} n = 3m$, and therefore by
+                    assumption
+                    \begin{equation*}
+                        \left| \bigcup_{x \in X} \Gamma(x) \right| \geq \frac{4}{3}
+                        |X|.
+                    \end{equation*}
+                    But left side is at most $n - 1$, because $v$ is not a neighbor
+                    of any element in $X$, and the right one is exactly $4m$. That
+                    would mean $n - 1 \geq 4m = n$, so we arrive at a contradiction.
+                \item{} Let $n = 4m + 2$ for some $m \in \N$. We pick a subset $X
+                    \subseteq G \setminus T$ of exactly the size $3m +
+                    1$ (it exists because $T \leq \frac{n}{4}$). Since $3m + 1 \leq
+                    \frac{3}{4}n$, the set $X$ fulfils condition $|X| \leq
+                    \frac{3}{4} n$, and therefore we must have
+                    \begin{equation*}
+                        \left| \bigcup_{x \in X} \Gamma(x) \right| \geq \frac{4}{3}
+                        |X|.
+                    \end{equation*}
+                    But left side is at most $n - 1$, because $v$ is not a neighbor
+                    of any element in $X$, and the right one is exactly
+                    $\frac{4}{3}(3m + 1) = 4m + \frac{4}{3}$. That would mean
+                    \begin{equation*}
+                        n - 1 \geq 4m + \frac{4}{3} = n - 1 + \frac{1}{3},
+                    \end{equation*}
+                    so we arrive at a contradiction.
+            \end{itemize}
+            This proves the claim.
+        \end{proof_claim}
+
+        The claim therefore show that the subgraph $G \setminus S$ cannot have
+        isolated vertices.
+
+        We prove another claim.
+        \begin{claim}
+            Assume current environment variables, mainly $|S| < \frac{n}{4}$.
+            Then for every connected component $C$ of $G \setminus S$ we have
+            \begin{equation*}
+                \frac{n}{4} - |S| < |C| - 1.
+            \end{equation*}
+        \end{claim}
+        \begin{proof_claim}
+            Suppose the statement wouldn't hold. Let $C$ be a connected component in
+            $G \setminus S$ with $\frac{n}{4} - |S| \geq |C| - 1$. Pick an element $v \in
+            C$. Then the set $S' := S \cup (C \setminus \{v\})$ violates first
+            claim, because $v$ by assumption does not have any neighbors in the set
+            $G \setminus S'$ and is thus an isolated vertex in $G \setminus S'$, but
+            $|S'| \leq \frac{n}{4}$ also holds. This proves the claim.
+        \end{proof_claim}
+
+        Note that $q_G(S) \geq |S| + 2$, because $q_G(S)$ and $|S|$ have same
+        parity (i.e. $q_G(S) - |S| = 0 \mod 2$), which we
+        argued during the lectures already when we proved Tutte's theorem. It is a
+        direct consequence of $V(G)$ being even and all components being odd.
+
+        We consider cases when $n$ is divisible by $4$ and when it is not
+        separately.
+
+        Consider $n = 4m$ for some $m \in \N$.
+        We make a simple estimate for amount of vertices in $G \setminus S$:
+        \begin{equation*}
+            n - |S| \geq 3 (|S| + 2)
+        \end{equation*}
+        which simplifies to $n \geq 4 |S| + 6$ and further to $m \geq |S| +
+        \frac{3}{2}$. Since all involved variables are natural numbers, we must have
+        $m \geq |S| + 2$. We can now show that every connected component in $G \setminus
+        S$ has to be at least of size $5$. Using last claim we have that the value $\frac{n}{4} -
+        |S| + 1 \geq |S| + 2 - |S| + 1 = 3$ must be strictly less than the size of
+        any component. So all components must be of cardinality at least $5$.
+
+        Therefore we have $n - |S| \geq 5 (|S| + 2)$ (simply by giving rough lower
+        bound for amount of vertices in $G \setminus S$).
+
+        Using all the things we calculated by now we can count vertices in $G$
+        once again to obtain
+        \begin{equation}\label{equation_6}
+            |S| + (|S| + 2) \left( \frac{n}{4} - |S| + 2 \right) \leq n
+        \end{equation}
+        where we sum $|S|$ and product of amount of connected components with
+        lower bound for their size. Manipulating this inequality gives:
+        \begin{align*}
+            |S| + (|S| + 2) \left( \frac{n}{4} - |S| + 2 \right) &\leq n \\
+            |S| + |S| \frac{n}{4} - |S|^2 + 4 &\leq \frac{n}{2} \\
+            (|S| - 2) \frac{n}{4} &\leq |S|^2 - |S| - 4 \\
+            \frac{n}{4} &\leq \frac{|S|^2 - |S| - 4}{|S| - 2} \\
+            \frac{n}{4} &\leq |S| + 2 - \frac{|S|}{|S| - 2}.
+        \end{align*}
+
+
+        Lets treat edge cases, since we divided by $|S| - 2$ in the calculation,
+        which could in general be non-positive.
+        \begin{itemize}
+            \item{If $|S| = 0$, then $G$ would not be connected, which would
+                clearly violate condition~\ref{condition} by picking $X$ to be
+                the smallest component.}
+            \item{If $|S| = 1$, then using condition~\ref{condition} on any connected
+                component $C \subseteq G \setminus S$ yields $|C| \leq 3$. At
+                the same time there are no isolated vertices in $G \setminus S$,
+                so all connected components in $G \setminus S$ must be of size
+                $3$. And there are at least $3$ connected components in $G
+                \setminus S$, since $S$ violates Tutte condition. Pick $X$ to be
+                a union of two components in $G \setminus S$, so $|X| = 6$. Then
+                \begin{equation*}
+                    \frac{4}{3} |X| \leq | \bigcup_{x \in X} \Gamma(x) | \leq |X
+                    \cup S| = 7
+                \end{equation*}
+                gives contradiction in the case $|S| = 1$.
+                }
+            \item{If $|S| = 2$, then equation~\ref{equation_6} yields $2 \leq
+                0$.}
+        \end{itemize}
+
+        Then we just plug in $n \geq 6 |S| + 10$ which we calculated earlier to get
+        \begin{align*}
+            \frac{6|S| + 10}{4} &\leq |S| + 2 - \frac{|S|}{|S| - 2} \\
+            \frac{1}{2}|S| + \frac{1}{2} &\leq - \frac{|S|}{|S| - 2}
+        \end{align*}
+        another contradiction, this time with existance of such $S$ in case when
+        $n$ is divisible by $4$.
+
+        Suppose now $n$ is not divisible by $4$. It is even, so it must of the
+        form $n = 4m + 2$ for some $m \in \N$.
+        We again make an estimate for amount of vertices in $G \setminus S$.
+        \begin{align*}
+            n - |S| &\geq 3(|S| + 2) \\
+            n &\geq 4|S| + 6
+        \end{align*}
+        which gives estimate $m \geq |S| + 1$. That is ``worse estimate'' than
+        we got in case when $n$ was divisible by $4$. But if there would exist a
+        connected component in $G \setminus S$ with at least $5$ elements, then
+        we can get estimate $|S| + 2 \leq m$ as in the case when $n$ was
+        divisible by $4$. Concretely we get
+        \begin{align*}
+            |S| + 3 (|S| + 1) + 5 &\leq 4m + 2 \\
+            |S| + \frac{3}{2} &\leq m. \\
+            |S| + 2 &\leq m
+        \end{align*}
+        If there are more than $|S| + 2$ connected components in $G \setminus
+        S$, we also get estimate $|S| + 2 \leq m$ just like in the case when $n$
+        was divisible by $4$, concretely
+        \begin{align*}
+            |S| + 3 (|S| + 3) &\leq 4m + 2 \\
+            |S| + \frac{7}{4} &\leq m \\
+            |S| + 2 &\leq m.
+        \end{align*}
+        So in these two cases (when $G \setminus S$ has either more connected
+        components than $|S| + 2$ or it has one of size more than $5$), we do
+        exact same argument as when $n$ was divisible by $4$. That argument did
+        not use that $n$ is divisible by $4$ from that point on. Therefore
+        arrive at the contradiction with such $S$ existing and $n$ being of the
+        form $4m + 2$ and $G \setminus S$ either having a component at least of
+        size $5$ or having strictly more than $|S| + 2$ connected components.
+
+        Now we focus on the last case, if $G \setminus S$ only contains components
+        of size $3$ and exactly $|S| + 2$ of them. Then $n = |S| + 3(|S| + 2)$, so
+        $m = |S| + 1$. Pick any connected component of the subgraph $G \setminus S$
+        and denote it with $C$. We use the condition~\ref{condition} on the set
+        $X := G \setminus (S \cup C)$. Note that $C$ does not have any neighbors in
+        other connected components in $G \setminus S$, so
+        \begin{equation*}
+            \left| \bigcup_{x \in X} \Gamma(x) \right| \leq n - 3
+        \end{equation*}
+        We also know $|X| = 3 (|S| + 1)$. Using condition we get
+        \begin{align*}
+            \frac{4}{3} |X| &\leq n - 3 \\
+            4 (|S| + 1) &\leq n - 3 \\
+            4m &\leq 4m + 2 - 3 \\
+            4m &\leq 4m - 1
+        \end{align*}
+        which contradicts the fact that $S$ violating Tutte condition with $|S|
+        < \frac{n}{4}$ exists in $G$.
+
+        We covered all cases now, so there is no set $S$ that would violate
+        Tutte condition, which means $G$ has a perfect matching by Tutte's
+        theorem.
+    \end{itemize}
+
+    % But this is
+    % absurd, it is not possible components would be that big. Lets count vertices
+    % in $G \setminus S$ again
+    % \begin{equation*}
+    %     (|S| + 2) \left(\frac{1}{2} |S| + \frac{7}{2}\right) \leq n - |S|
+    % \end{equation*}
+
+    % We now observe the sizes of components in $G \setminus S$. We will show that
+    % they have to be $\geq \frac{n}{4} - |S|$, otherwise we could add all but one
+    % vertex of that component to $S$ and obtain a set smaller than $\frac{n}{4}$
+    % whose complement would have an isolated point. Using this size restriction
+    % on components we will arrive to contradiction of $|S| < \frac{n}{4}$.
+
+    % Suppose there is a connected component $C \subseteq G \setminus S$ with
+    % \begin{equation}\label{equation_4}
+    %     |C| \leq \frac{n}{4} - |S|.
+    % \end{equation}
+    % Pick any $v \in C$ and define $S' := S \cup (C \setminus \{v\})$. Then $S'$
+    % contradicts the statement in the claim above, because by construction $|S'|
+    % < \frac{n}{4}$ and $G \setminus S'$ has an isolated point $v$.
+
+    % So for all connected components $C$ we have $\frac{n}{4} - |S| < |C|$.
+    % Let $C_0$ be the smallest connected component in $G \setminus S$. Then we
+    % have inequality
+    % \begin{equation}\label{equation_5}
+    %     q_G(S)|C_0| \leq n - |S|
+    % \end{equation}
+    % because the left side counts the size of smallest component multiplied by
+    % amonut of components (giving a lower estimate for amount of vertices in $G
+    % \setminus S'$), meanwhile on the left we have the actual amount of vertices
+    % in $G \setminus S'$.
+
+    % Then we put equation~\ref{equation_4} into equation~\ref{equation_5} to
+    % obtain
+    % \begin{equation}\label{equation_6}
+    %     q_G(S) \left( \frac{n}{4} - |S| \right) \leq n - |S|
+    % \end{equation}
+    % and using $q_G(S) > |S|$ we finally get
+    % \begin{equation}\label{equation_6}
+    %     |S| \left( \frac{n}{4} - |S| \right) < n - |S|
+    % \end{equation}
+    % which we can rearrange to get
+    % \begin{equation}\label{equation_6}
+    %     \frac{|S| - 4}{4} n < |S|^2 - |S|
+    % \end{equation}
+    % and further
+    % \begin{equation}\label{equation_6}
+    %     \frac{|S| - 4}{4} n < |S|^2 - |S|
+    % \end{equation}
+\end{exercise}
+
+\end{document}

@@ -1,0 +1,362 @@
+\newcommand{\sheet}{3}
+\input{Header.tex}
+
+\begin{document}
+
+\maketitle
+
+\begin{exercise}{2}
+    \begin{enumerate}[i)]
+        \item{
+                On other pages
+            % We use the same trick as when we showed that an augmenting path
+            % exists exactly when matching is not maximum. Let $N$ be a maximum
+            % matching and $M$ some matching. Then look at a graph $G'$ on verices
+            % $V(G)$ and edges $M \triangle N$, so $G' = (V(G), M \triangle N)$.
+            % In graph $G'$ every vertex has degree at most $2$, so $G'$ is a
+            % union of circuits, paths and isolated vertices. Since edges on paths
+            % and circuits alternate with regards to either being from $M$ or $N$,
+            % the circuits do not contribute more edges from $N$ than $M$. And
+            % since every path can contain at most $1$ edge more from $N$ than
+            % from $M$, we must have at least $|N| - |M|$ paths. These paths
+            % clearly correspond to disjoint $M$-augmenting paths in $G$.
+        }
+        \item{
+                On other pages
+            % Still consider this graph $G' = (V(G), M \triangle N)$. The amount of
+            % edges in this graph is at most $|N| + |M|$ and there are at least
+            % $|N| - |M|$ many disjoint paths. Therefore not all can be longer
+            % than $\frac{|N| + |M|}{|N| - |M|}$, which shows the existance of one
+            % that is shorter than that.
+        }
+        \item{
+                On other pages
+            }
+        \item{
+                From part (iii) we know that lengths of $P_i$ will not decrease.
+                Suppose $j = i + 1$, so they are consecutive. If they were not
+                disjoint then, again using part (iii), $|E(P_j)| > |E(P_i)|$.
+
+                Let now $j > i$ and $|E(P_i)| = |E(P_j)|$. Then, since
+                lengths in the sequence do not decrease,
+                \begin{equation*}
+                    |E(P_i)| = |E(P_{i+1})| = \dots = |E(P_j)|.
+                \end{equation*}
+                Suppose there exists a path $P_k$ for some $k \in  \{i + 1,
+                \dots, j\}$ such that $E(P_i), E(P_{i+1}), \dots, E(P_k)$ are
+                not pairwise disjoint. Take such $k$ to be minimal. Since
+                $E(P_i), E(P_{i+1}), \dots, E(P_{k-1})$ are pairwise disjoint,
+                there exists $l \in \{i, \dots, k-1\}$ such that $P_l$ and $P_k$
+                are not disjoint. Since we can switch the order of augmentation
+                if the $M$-augmenting paths are vertex-disjoint, we can simply
+                augment over all paths $P_i, \dots, P_{k-1}$ except on $P_l$.
+                Then we are again in the same situation as in part (iii) of this
+                exercise and we get $|E(P_k)| > |E(P_l)|$. This is contradiction
+                with assumption that such a path $P_k$ exists.
+            }
+        \item{From part (ii) we know that at each step of the sequence $P_1,
+            \dots, P_{\nu(G)}$ we will have a path that is at most of length
+            $\frac{\nu(G) + |M|}{\nu(G) - |M|}$ where $|M|$ is the size of the
+            matching before augmenting. So if we have done $i$ augmentations up
+            to now, the set $|M|$ has size $i$. And thus there exists an
+            augmentation path of length at most $\frac{\nu(G) + i}{\nu(G) - i}$.
+            Since the lengths of these paths strictly increase, all of the paths
+            up to this point must have been at most that length. And assume
+            ``worst case'' where all paths after $i$-th will be of pairwise
+            different lengths. Also keep in mind that all $M$-augmenting paths
+            have odd lengths. The following is then the upper limit for number
+            of possible different numbers
+            \begin{equation*}
+                \left\lfloor \frac{1}{2} \left\lfloor \frac{\nu(G) + i}{\nu(G) -
+                i} \right\rfloor \right\rfloor + \nu(G) - i
+            \end{equation*}
+            Since this holds for any $i \in \{1, \dots, \nu(G)\}$, we should
+            look at which $i$ this bound is tightest.
+            Write $w := \nu(G)$.
+            To find that value it is enough to try to minimize
+            \begin{equation*}
+                \frac{w + i}{w - i} - 2 i + 2 = \frac{w + i - (2i - 2)(w - i)}{w
+                - i} = \frac{w + i - 2wi + 2 i^2 - 2i + 2 w}{w - i}
+            \end{equation*}
+            We can pretend $i \in \R$ and expression continuous, so we can take
+            the derivative. We get
+            \begin{equation*}
+                \frac{(4i - 1 - 2w)(w - i) + 3w - i - 2wi + 2i^2}{\dots} = 
+                \frac{-2 i^2 + 4 i w + 2 w -2 w^2}{\dots}
+            \end{equation*}
+            Look at the zeros of the numerator. It is a polynomial of 2nd
+            degree, so they are
+            \begin{equation*}
+                i_{1,2} = \frac{2w \pm \sqrt{4 w^2 - 4 (w^2 - w)}}{2} = w \pm
+                \sqrt{w}
+            \end{equation*}
+            Since $i \leq w$ and $i \in \N$, we take an integer close to $w -
+            \sqrt{w}$. Lets try $i = \lceil w - \sqrt{w} \rceil$. So the number
+            of different integers in the sequence $|E(P_i)|_{i = 1,\dots,
+            \nu(G)}$ is at most
+            \begin{equation*}
+                \left\lfloor \frac{1}{2} \left\lfloor \frac{2 w + \lceil -
+                \sqrt{w} \rceil}{\lceil \sqrt{w} \rceil}
+                \right\rfloor\right\rfloor + w - \lceil w - \sqrt{w} \rceil
+            \end{equation*}
+            Write $\sqrt{w} = u + d$, where $u = \lfloor \sqrt{w} \rfloor$. Then
+            this simplifies to
+            \begin{align*}
+                \left\lfloor \frac{1}{2} \left\lfloor \frac{2(u^2 + 2 d u + d^2)
+                - u}{u} \right\rfloor\right\rfloor & + u = \\
+                &= \left\lfloor \frac{1}{2} \left\lfloor 2 u + 4 d +  \frac{2
+                d^2}{u} - 1 \right\rfloor \right\rfloor + u \\
+                &= 2u + \left\lfloor \frac{1}{2} \left\lfloor 4 d +  \frac{2
+                d^2}{u} \right\rfloor - \frac{1}{2} \right\rfloor \\
+                &= 2 \sqrt{w} - 2 d + \left\lfloor \frac{1}{2} \left\lfloor
+                4d + \frac{2 d^2}{u} \right\rfloor - \frac{1}{2}
+                \right\rfloor \\
+                &\leq 2 \sqrt{w} - 2 d + \left\lfloor \frac{1}{2} \left\lfloor 4
+                + \frac{2}{u} \right\rfloor - \frac{1}{2} \right\rfloor \\
+                &\leq 2 \sqrt{w} - 2 d + 1 \\
+                &< 2 \sqrt{w} + 1
+            \end{align*}
+            Which proves there is less than $2 \sqrt{\nu(G)} + 1$ different
+            numbers in the sequence $|E(P_i)|_{i = 1,\dots, \nu(G)}$.
+            }
+        \item{Denote $G = (A \dot\cup B, E)$.
+
+            First note that every $M$-augmenting path is odd, so it has one
+            ending in $A$ and other in $B$. Using that remark the algorithm will
+            start at unmatched vertices in $A$ and construct a directed graph
+            from which we will be able to extract shortest $M$-augmenting paths.
+
+            The algorithm is out of two parts:
+            \begin{enumerate}
+                \item{BFS starting from unmatched vertices in $A$ and searching
+                    for unmatched vertices in $B$, and thus creating some directed
+                    graph}
+                \item{Many DFS-es starting at the leaves of a directed graph
+                    mentioned above and searching for unmatches vertices in $A$.
+                    We will keep track of visited vertices to obtain a family of
+                    disjoint shortest $M$-augmenting paths.}
+            \end{enumerate}
+
+            Let $\tau$ be a function on vertices $V(G)$ such that $\tau(v) = v$
+            for $v \in V(G)$ unmatched and $\tau(v) = u$ if $\{u, v\} \in M$.
+
+            We define the following algorithm:
+            \begin{algorithmic}
+                \State $I = \text{unmatched vertices}$
+                \State $P = \emptyset$ \Comment{used to store beginnings of
+                paths}
+                \State $\mu \equiv \emptyset$ \Comment{edges of a directed graph, as a
+                function}
+                \State $\pi \equiv \infty$ \Comment{function on vertices}
+                \For{$v \in A \cap I$}
+                    \State $\pi(v) = 0$
+                \EndFor
+                \State $\text{queue}\ q = A \cap I$ \Comment{FIFO queue}
+                \State $l_{min} = \infty$
+                \While{$q$ not empty \& $\pi(q.\text{top}()) < l_{min} $}
+                    \State{$v := q.\text{pop()}$}
+                    \If{$v \in A$}
+                        \For{$u \in N(v) \setminus \{\tau(v)\}$}
+                            \If{$\pi(u) > i + 1$}
+                                \State $\mu(u) := \{v\}$
+                                \State $\pi(u) := i + 1$
+                                \State q.add($u$)
+                            \ElsIf{$\pi(u) = i + 1$}
+                                \State $\mu(u) := \mu(u) \cup \{v\}$
+                            \EndIf
+                        \EndFor
+                    \ElsIf{$\tau(v) \not= v$}
+                        \State $\mu(\tau(v)) := v$
+                        \State $\pi(\tau(v)) := i + 1$
+                        \State $q$.add($\tau(v)$)
+                    \Else
+                        \State P.add($v$)
+                        \State $l_{min} := \pi(v)$
+                    \EndIf
+                \EndWhile
+                \State \Return{P, $\mu$}
+
+                % \For{$p \in P$}
+                %     \State $l_p := \text{length of path } r, \mu(r),
+                %     \mu(\mu(r)) \dots \text{(until a vertex repeats)}$
+                % \EndFor
+                % \State $P := \{ p \mid l_p = \min_s l_s \}$
+
+                % \State $S := \emptyset$
+                % \State $R := \emptyset$
+                % \State $\text{queue}\ q := P$
+                % \State $\varphi := \id_{V(G)}$
+                % \While{$q$ not empty}
+                %     \State{$v := q.\text{pop()}$}
+                %     \If{$\mu(v) = v$} \Comment{meaning $v \in I \cap A$}
+                %         \State R.append($v$)
+                %     \ElsIf{$\mu(v) \notin S$}
+                %         \State $q$.append($\mu(v)$)
+                %         \State $\varphi(\mu(v)) := v$
+                %         \State S.append($\mu(v)$)
+                %     \EndIf
+                % \EndWhile
+
+                % \For{$r \in R$}
+                %     \State $l_r := \text{length of path } r, \varphi(r),
+                %     \varphi(\varphi(r)) \dots \text{(until a vertex repeats)}$
+                % \EndFor
+                % \State $R := \{ r \mid l_r = \min_s l_s \}$
+                % \State \Return{R, $\varphi$}
+            \end{algorithmic}
+
+            Description:
+            The algorithm is a modified BFS. It keeps stored:
+            \begin{itemize}
+                \item{distance (length of shortest $M$-alternating path) of each
+                    visited element to the nearest element of $I \cap A$}
+                \item{directed edges going along shortest $M$-alternating paths
+                    towards elements of $I \cap A$}
+            \end{itemize}
+            At the end it returns $P$, which are the elements of $I \cap B$ that
+            are in the union of shortest $M$-augmenting paths. If $P$ is empty,
+            then $I \cap B$ is not reachable from any vertex in $I \cap A$ with
+            $M$-augmenting paths. This means matching $M$ is maximum matching
+            (using Berge theorem).
+
+            The time complexity of this algorithm is clearly $\mathcal{O}(m +
+            n)$, because BFS is $\mathcal{O}(m + n)$ and we do only a few
+            constant operations at each vertex.
+
+
+            Denote the directed graph $\overline{G} = (V(G), \{ v \rightarrow
+            u \mid v \in V(G), u \in \mu(v) \} )$. This directed graph is
+            clearly acyclic since for each edge $v \rightarrow u$ we have
+            \begin{equation}\label{graph_property}
+                \pi(v) = \pi(u) + 1.
+            \end{equation}
+
+            All paths in $\overline{G}$ starting in an edge $v \in P$ and ending
+            in an edge $u \in I \cap A$ have the same length, which follows
+            from~\ref{graph_property}.
+
+            Note that two paths in $\overline{G}$ are vertex-disjoint exactly
+            when their endpoints are different and they are edge-disjoint. This
+            follows from the fact that a path is $M$-alternating and if they
+            share a vertex, they must also share the edge matching this vertex
+            (except endpoints, which we assumed separately). Using this remark
+            it is enough to remove edge on that paths in the algorithm.
+
+            On graph $\overline{G}$ we run DFS multiple times. In each iteration
+            we find an (shortest) $M$-augmenting path and remove all vertices
+            from the graph before next iteration. That way we find some maximal
+            family of $M$-augmenting paths from $I \cap B$ to $I \cap A$.
+
+            Sketch of an algorithm:
+            \begin{algorithmic}
+                \State $\mathcal{P} = \emptyset$
+                \For{$v \in P$}
+                    \State Run DFS in $\overline{G}$ starting in $v$
+                    and searching for any element in $I \cap A$.
+                    \If{path was found from $P$ to $I \cap A$}
+                        \State Add path to $\mathcal{P}$
+                        \State Remove all vertices in $\overline{G}$ that lie on that path
+                    \EndIf
+                \EndFor
+            \end{algorithmic}
+
+            Time complexity of this algorithm is also clearly $\mathcal{O}(m +
+            n)$ because DFS is. If we run both parts one after the other the
+            time complexity is also $\mathcal{O}(m + n)$.
+
+            Lets prove this family $\mathcal{P}$ satisfies the condition in the
+            exercise. Suppose we augmented $M$ using all paths in $\mathcal{P}$.
+            Denote the augmented matching $M'$. Since all disjoint paths are
+            disjoint, it does not matter in which order we do the augmentating.
+            Suppose there exists an $M'$-augmenting path $P'$ for which $|E(P')|
+            \leq l_{min}$. Separate cases
+            \begin{itemize}
+                \item{If it shared a vertex with some path $P \in If
+                    \mathcal{P}$, we can use part 3 of this exercise to prove on
+                    matching $M \triangle (\cup \mathcal{P} \setminus \{P\})$
+                    that $|E(P')| > |E(P)| = l_{min}$.}
+                \item{If it is disjoint with all paths in the family
+                    $\mathcal{P}$, then $P'$ would be contained in the graph
+                    $\overline{G}$. Let $v' \in P' \cap I \cap B$. Then in the
+                    for loop when we pick $v'$ we would have found an
+                    $M$-augmenting path that starts in $v'$. Therefore
+                    $\mathcal{P}$ would contain a path that is not disjoint with
+                    $P'$.}
+            \end{itemize}
+            Therefore such a path cannot exist and thus $\mathcal{P}$ satisfies
+            inequality in the exercise.
+
+            % Algorithm is a modified BFS (ran twice), with the condition that a
+            % paths must be $M$-alternating. That is reflected in the fact that
+            % after arriving in $B$ along an unmatched edge, we have either come
+            % to an unmatched vertex in $B$ (in which case we found a path) or our
+            % next step will be along the matching edge (going back to $A$).
+
+            % Important note: This algorithm does not stop after finding first $I
+            % \cap A \rightarrow I \cap B$ path (it shouldn't stop at the
+            % \emph{first} one anyway). It continues running until all vertices
+            % have been seen. We could implement some sort of index which we would
+            % carry around and increase along the path. Then, when we would find
+            % the first unmatched edge in $B$ we would remember the value (meaning
+            % the length of the path) and then stop the algorithm after top
+            % element in $q$ is further from $A$ than that value. That would for
+            % sure speed up the algorithm, but I think it would not change the
+            % complexity, so for this exercise this is not necessary. In the worst
+            % case we still go over all vertices.
+
+            % After first while loop finishes we get a set $P \subseteq B \cap I$
+            % and a function $\mu$. The set $P$ contains the endings of
+            % $M$-augmenting paths we are looking for.
+
+            % At this point all we are interested in can be described as a
+            % directed subgraph that is an $M$-alternating forest with roots $I
+            % \cap A$. All edges are directed towards the root. Note that not
+            % necessarily all leaves are elements of $I \cap B$ (most probably
+            % aren't), $P$ describes exactly those leaves that are in $I \cap B$.
+            % In the next while loop we will start at those leaves that are in $I
+            % \cap B$ and go towards the roots. That way we will pick a single
+            % path out of every tree in the forest (that contains a vertex from
+            % $P$). At the end we still have to compare those paths and pick all
+            % shortest ones.
+
+            % So we empty the set $S$, which remembers seen vertices, and put $P$
+            % in the queue $q$. Then we do BFS and search towards the root. If two
+            % paths of equal length collide in some vertex while going towards the
+            % root, we just pick the path that we looked at first (this depends on
+            % the order in which we put $P$ into $q$), because it does not matter
+            % which one we choose (because they are of the equal length). While
+            % going searching towards the root we use $\varphi$ to store path
+            % back, towards the leaves in $P$. 
+
+            % At the end we get $\varphi$ and $R$. Each element $r \in R$ defines
+            % a path $r, \varphi(r), \varphi(\varphi(r)), \dots$ which leads
+            % towards an element in $P$, so towards an unmatched vertex in $B$.
+            % Then just go over all of these paths and note their lengths. Then
+            % pick all the ones whole length is equal to minimum of their lengths.
+            % This gives us a family of paths $\mathcal{P}$, for which the
+            % statement in the exercise is true.
+
+            % Suppose there exists an $M'$-augmenting path $V$, for which $|E(V)|
+            % \leq l$ where $l$ is the length of paths in $\mathcal{P}$. If 
+
+            }
+        \item{Using previous parts of the exercise we can construct an
+            algorithm that finds a maximum matching of a bipartite graph in time
+            complexity $\mathcal{O}(\sqrt{n}(m + n))$.
+
+            We actually just use the algorithm described above.
+            Specificaly:
+            \begin{itemize}
+                \item{Run algorithm above and get disjoint shortest
+                    $M$-augmenting paths.}
+                \item{Augment over those paths.}
+                \item{Go back to first step.}
+            \end{itemize}
+            From part (v) of this exercise we know we will have to iterate at
+            most $2 \sqrt{\nu(G)} + 1$ times. Using $2 \nu(G) \leq n$ we quickly
+            get that all together would be in the class $\mathcal{O}(\sqrt{n}(n
+            + m))$.}
+    \end{enumerate}
+\end{exercise}
+
+\end{document}
