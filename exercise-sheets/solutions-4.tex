@@ -18,4 +18,46 @@
     and $M$ is maximum.
 \end{exercise}
 
+\begin{exercise}{2}
+    I assume the exercise means we can use that fact that there exists and
+    algorithm that finds maximal family of disjoint $M$-augmenting paths (in a
+    general graph) and we do not have to make it.
+
+    So let $\epsilon > 0$ and $G$ an indirected graph. WLOG assume
+    $\frac{1}{\epsilon} = k \in \N$.
+
+    Start with $M = \emptyset$ and use the algorithm on $G$ and $M$ to find a
+    family $\mathcal{P} = \{ P_1, \dots, P_k \}$ of augmenting paths, such that
+    after augmenting the matching, there are no more augmenting paths of that
+    length in $G$. So in every loop, we strictly increasy the legths of path in
+    $\mathcal{P}$ by at least $2$.
+
+    Repeat this loop $k$ times. The length of paths in the last step was at
+    least $2 k - 1$. So now there is no $M$-augmenting paths of length $2 k - 1$
+    in $G$ anymore (all, if any, are strictly longer).
+
+    Time complexity of this scheme is $\mathcal{O}(k (m + n))$ because we simply
+    run a $\mathcal{O}(m + n)$ algorithm $k$ times.
+
+    Now all that is left, is to prove this matching $M$ is suficiently big, ie
+    that $\frac{|M|}{\nu(G)} \geq 1 - \epsilon$. Indeed, take any maximum
+    matching $N$ in $G$ and look at the graph $G' = (V(G), M \triangle N)$.
+    Every cycle in $G'$ contains same amount of edges from $M$ as from $N$. And
+    every path, say of length $2 l + 1$, contains $l$ edges from $M$ and $l + 1$
+    from $N$, meaning the ratio $\frac{\text{\# edges from}\ M}{\text{\# edges
+    from}\ N}$ is $\frac{l}{l+1}$. Using that paths in $G'$ are at least of
+    length $2 k + 1$, we get that the ratio is at least $\frac{k}{k + 1}$. The
+    fraction $\frac{|M \setminus N|}{|N \setminus M|}$ is then clearly at least
+    $\frac{k}{k + 1}$ (since it is at least that much on every connected
+    component). Then
+    \begin{equation*}
+        \frac{k}{k + 1} \leq
+        \frac{|M \setminus N|}{|N \setminus M|} \leq
+        \frac{|M| - |M \cap N|}{|N| - |M \cap N|} \leq 
+        \frac{|M|}{|N|}
+    \end{equation*}
+    So we have shown that $|M| \geq (1 - \frac{1}{k + 1}) \nu(G) \geq (1 -
+    \epsilon) \nu(G)$, which we had to show.
+\end{exercise}
+
 \end{document}
