@@ -6,6 +6,7 @@
 #define GRAPH_HPP
 
 #include <iostream>
+#include <stdexcept>
 
 /**
    @file graph.hpp
@@ -107,7 +108,7 @@ private:
   **/
   void add_neighbor(NodeId const id) { _neighbors.push_back(id); }
 
-  std::vector<NodeId> _neighbors = {};
+  std::vector<NodeId> _neighbors;
 }; // class Node
 
 /**
@@ -137,6 +138,7 @@ public:
     for (int i = 0; i < num_nodes; i++) {
       _nodes.push_back(Node());
     }
+    _num_edges = 0;
   };
 
   /** @return The number of nodes in the graph. **/
@@ -162,8 +164,13 @@ public:
   can be used to model non-simple graphs.
   **/
   void add_edge(NodeId node1_id, NodeId node2_id) {
+    if (node1_id == node2_id) {
+      throw std::invalid_argument("Indices not distinct.");
+    }
+
     _nodes[node1_id].add_neighbor(node2_id);
     _nodes[node2_id].add_neighbor(node1_id);
+    ++_num_edges;
   };
 
   // Static functions are not called on an object of the class, but on the class
@@ -173,6 +180,7 @@ public:
    * graph.
    */
   static Graph read_dimacs(std::istream &str) {
+    //TODO check if all inputs here make sense, ie add some error checking
     std::string a, b, c, d = {};
     str >> a >> b >> c >> d;
     NodeId num_nodes = std::stoi(c);
@@ -193,8 +201,8 @@ public:
   friend std::ostream &operator<<(std::ostream &str, Graph const &graph) {
     std::cout << "p edge " << graph.num_nodes() << " " << graph.num_edges()
               << "\n";
-    for (int i = 0; i < graph.num_nodes(); i++) {
-      for (int j : graph.node(i).neighbors()) {
+    for (NodeId i = 0; i < graph.num_nodes(); i++) {
+      for (NodeId j : graph.node(i).neighbors()) {
         std::cout << "e " << i << " " << j << "\n";
       }
     }

@@ -1,11 +1,15 @@
 #include <fstream>  // For reading input files.
 #include <iostream> // For writing to the standard output.
+#include <numeric>
 
 #include "graph.hpp"
 
+std::vector<ED::NodeId> edmonds(ED::Graph graph){};
+
 int main(int argc, char **argv) {
   if (argc != 2) {
-    std::cout << "Expected the file name as an argument, but found " << argc - 1 << std::endl;
+    std::cout << "Expected the file name as an argument, but found " << argc - 1
+              << std::endl;
     return EXIT_FAILURE; // return 1 would do the same, but is way too easy to
                          // mix up!
   }
@@ -24,6 +28,8 @@ int main(int argc, char **argv) {
       }
     }
   }
+
   std::cout << greedy_matching_as_graph;
+
   return EXIT_SUCCESS;
 }
