@@ -105,9 +105,7 @@ private:
      @warning Does not check whether @c id is the identity of the node itself
     (which would create a loop!).
   **/
-  void add_neighbor(NodeId const id) {
-    _neighbors.push_back(id);
-  }
+  void add_neighbor(NodeId const id) { _neighbors.push_back(id); }
 
   std::vector<NodeId> _neighbors = {};
 }; // class Node
@@ -177,7 +175,6 @@ public:
   static Graph read_dimacs(std::istream &str) {
     std::string a, b, c, d = {};
     str >> a >> b >> c >> d;
-    std::cout << a << b << c << d;
     NodeId num_nodes = std::stoi(c);
 
     ED::Graph graph = Graph(num_nodes);
@@ -185,7 +182,6 @@ public:
     while (!(str >> a >> b >> c).eof()) {
       NodeId node1_id = std::stoi(b) - 1;
       NodeId node2_id = std::stoi(c) - 1;
-      std::cout << node1_id << node2_id << '\n';
       graph.add_edge(node1_id, node2_id);
     };
 
@@ -195,8 +191,13 @@ public:
     @brief Prints the graph to the given ostream in DIMACS format.
   **/
   friend std::ostream &operator<<(std::ostream &str, Graph const &graph) {
-    str << "asdsada";
-
+    std::cout << "p edge " << graph.num_nodes() << " " << graph.num_edges()
+              << "\n";
+    for (int i = 0; i < graph.num_nodes(); i++) {
+      for (int j : graph.node(i).neighbors()) {
+        std::cout << "e " << i << " " << j << "\n";
+      }
+    }
     return str;
   };
 
