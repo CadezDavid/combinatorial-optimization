@@ -7,6 +7,7 @@
  * though, so we need to include the actual implementation of std::istream and
  * std::ostream.
  */
+#include <algorithm>
 #include <iostream>
 
 /**
@@ -58,7 +59,10 @@ namespace ED {
 //! \c Node definitions
 /////////////////////////////////////////////
 
-void Node::add_neighbor(NodeId const id) { _neighbors.push_back(id); }
+void Node::add_neighbor(NodeId const id) {
+  if (std::find(_neighbors.begin(), _neighbors.end(), id) == _neighbors.end())
+    _neighbors.push_back(id);
+}
 
 /////////////////////////////////////////////
 //! \c Graph definitions
