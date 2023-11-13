@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <assert.h>
+#include <chrono>
 #include <deque>
 #include <fstream>  // For reading input files.
 #include <iostream> // For writing to the standard output.
@@ -69,42 +70,34 @@ vec edmonds(ED::Graph graph) {
 
         // Reset all trees
         outer.clear();
-        // ED::NodeId root_v = root[v];
-        // ED::NodeId root_u = root[u];
+        ED::NodeId root_v = root[v];
+        ED::NodeId root_u = root[u];
         for (ED::NodeId i = 0; i < graph.num_nodes(); i++) {
-          // if (root[i] == root_v || root[i] == root_u) {
-          root[i] = -1;
-          if (mu[i] == i) { // i not matched
+          if (root[i] == root_v || root[i] == root_u) {
+            root[i] = -1;
+            phi[i] = i;
+            ro[i] = i;
+          } else if (root[i] != -1 && (mu[i] == i || phi[mu[i]] != mu[i])) {
             outer.push_back(i);
-            root[i] = i;
           }
-          phi[i] = i;
-          ro[i] = i;
-          // }
         }
         M++;
         break;
       } else {
-        assert(root[u] == root[v]);
         vec p_v = {ro[v]};
         vec p_u = {ro[u]};
 
-        while (p_u.back() != root[u]) {
+        while (p_u.back() != root[u])
           p_u.push_back(ro[phi[mu[p_u.back()]]]);
-        }
 
-        while (p_v.back() != root[v]) {
+        while (p_v.back() != root[v])
           p_v.push_back(ro[phi[mu[p_v.back()]]]);
-        }
 
         while (p_v.size() > 1 && p_u.size() > 1 &&
                p_v[p_v.size() - 2] == p_u[p_u.size() - 2]) {
           p_u.pop_back();
           p_v.pop_back();
         }
-        assert(p_u.back() == p_v.back());
-        assert(p_v.size() < 2 || p_u.size() < 2 ||
-               (p_v[p_v.size() - 2] != p_u[p_u.size() - 2]));
         ED::NodeId r = p_u.back();
 
         if (ro[v] != r) {
@@ -128,7 +121,7 @@ vec edmonds(ED::Graph graph) {
             ro[z] = r;
       }
     }
-    if (M % 500 == 0)
+    if (M % 100 == 0)
       std::cout << "Matching: " << M << std::endl;
   }
   return mu;
@@ -136,16 +129,26 @@ vec edmonds(ED::Graph graph) {
 
 int main(int argc, char **argv) {
   if (argc != 2) {
-    std::cout << "Expected the file name as an argument, but found " << argc - 1
-              << std::endl;
-    return EXIT_FAILURE; // return 1 would do the same, but is way too easy to
-                         // mix up!
+    std::cout << "Expected one argument, but found " << argc - 1 << std::endl;
+    return EXIT_FAILURE;
   }
 
   std::fstream input_file_graph{argv[1]};
   ED::Graph const graph = ED::Graph::read_dimacs(input_file_graph);
 
+  std::chrono::steady_clock::time_point begin =
+      std::chrono::steady_clock::now();
+
   vec mu = edmonds(graph);
+
+  std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+
+  std::cout << "Time elapsed (sec) = "
+            << (std::chrono::duration_cast<std::chrono::microseconds>(end -
+                                                                      begin)
+                    .count()) /
+                   1000000.0
+            << std::endl;
 
   int nu = 0;
   for (ED::NodeId i = 0; i < mu.size(); i++)
