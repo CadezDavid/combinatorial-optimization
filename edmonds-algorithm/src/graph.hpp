@@ -106,7 +106,7 @@ private:
      @warning Does not check whether @c id is the identity of the node itself
     (which would create a loop!).
   **/
-  void add_neighbor(NodeId const id) { _neighbors.push_back(id); }
+  void add_neighbor(NodeId const id);
 
   std::vector<NodeId> _neighbors;
 }; // class Node
@@ -134,12 +134,13 @@ public:
      The number of nodes in the graph currently cannot be changed. You can only
   add edges between the existing nodes.
   **/
-  Graph(NodeId const num_nodes) {
-    for (int i = 0; i < num_nodes; i++) {
-      _nodes.push_back(Node());
-    }
-    _num_edges = 0;
-  };
+  Graph(NodeId const num_nodes);
+  // {
+  //   for (int i = 0; i < num_nodes; i++) {
+  //     _nodes.push_back(Node());
+  //   }
+  //   _num_edges = 0;
+  // };
 
   /** @return The number of nodes in the graph. **/
   NodeId num_nodes() const;
@@ -163,15 +164,16 @@ public:
      @warning Does not check that the edge does not already exist, so this class
   can be used to model non-simple graphs.
   **/
-  void add_edge(NodeId node1_id, NodeId node2_id) {
-    if (node1_id == node2_id) {
-      throw std::invalid_argument("Indices not distinct.");
-    }
+  void add_edge(NodeId node1_id, NodeId node2_id);
+  // {
+  //   if (node1_id == node2_id) {
+  //     throw std::invalid_argument("Indices not distinct.");
+  //   }
 
-    _nodes[node1_id].add_neighbor(node2_id);
-    _nodes[node2_id].add_neighbor(node1_id);
-    ++_num_edges;
-  };
+  //   _nodes[node1_id].add_neighbor(node2_id);
+  //   _nodes[node2_id].add_neighbor(node1_id);
+  //   ++_num_edges;
+  // };
 
   // Static functions are not called on an object of the class, but on the class
   // itself.
@@ -179,35 +181,39 @@ public:
    * Reads a graph in DIMACS format from the given istream and returns that
    * graph.
    */
-  static Graph read_dimacs(std::istream &str) {
-    //TODO check if all inputs here make sense, ie add some error checking
-    std::string a, b, c, d = {};
-    str >> a >> b >> c >> d;
-    NodeId num_nodes = std::stoi(c);
+  static Graph read_dimacs(std::istream &str);
+  // {
+  //   //TODO check if all inputs here make sense, ie add some error checking
+  //   std::string a, b, c, d = {};
+  //   str >> a >> b >> c >> d;
+  //   NodeId num_nodes = std::stoi(c);
 
-    ED::Graph graph = Graph(num_nodes);
+  //   ED::Graph graph = Graph(num_nodes);
 
-    while (!(str >> a >> b >> c).eof()) {
-      NodeId node1_id = std::stoi(b) - 1;
-      NodeId node2_id = std::stoi(c) - 1;
-      graph.add_edge(node1_id, node2_id);
-    };
+  //   while (!(str >> a >> b >> c).eof()) {
+  //     NodeId node1_id = std::stoi(b) - 1;
+  //     NodeId node2_id = std::stoi(c) - 1;
+  //     graph.add_edge(node1_id, node2_id);
+  //   };
 
-    return graph;
-  };
+  //   return graph;
+  // };
+
   /**
     @brief Prints the graph to the given ostream in DIMACS format.
   **/
-  friend std::ostream &operator<<(std::ostream &str, Graph const &graph) {
-    std::cout << "p edge " << graph.num_nodes() << " " << graph.num_edges()
-              << "\n";
-    for (NodeId i = 0; i < graph.num_nodes(); i++) {
-      for (NodeId j : graph.node(i).neighbors()) {
-        std::cout << "e " << i << " " << j << "\n";
-      }
-    }
-    return str;
-  };
+  friend std::ostream &operator<<(std::ostream &str, Graph const &graph);
+
+  // {
+  //   std::cout << "p edge " << graph.num_nodes() << " " << graph.num_edges()
+  //             << "\n";
+  //   for (NodeId i = 0; i < graph.num_nodes(); i++) {
+  //     for (NodeId j : graph.node(i).neighbors()) {
+  //       std::cout << "e " << i << " " << j << "\n";
+  //     }
+  //   }
+  //   return str;
+  // };
 
 private:
   std::vector<Node> _nodes;
