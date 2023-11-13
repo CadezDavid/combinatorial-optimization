@@ -16,6 +16,7 @@ vec edmonds(ED::Graph graph) {
   vec ro(graph.num_nodes());
   vec root(graph.num_nodes());
   std::deque<ED::NodeId> outer = {};
+  int M = 0;
 
   for (ED::NodeId i = 0; i < graph.num_nodes(); i++) {
     outer.push_front(i);
@@ -30,50 +31,28 @@ vec edmonds(ED::Graph graph) {
     v = outer.front();
     outer.pop_front();
     // if (root[v] == -1)
-    //   continue;
-
-    ED::NodeId w = v;
-    while (w != mu[w])
-      w = phi[mu[w]];
-    assert(w == root[v]);
-    // std::cout << "Looking at an outer vertex " << v << std::endl;
+    //   break;
 
     for (ED::NodeId u : graph.node(v).neighbors()) {
-      // std::cout << "Found neighbour " << u << std::endl;
       if (root[u] == -1) {
-        assert(mu[u] != v && mu[v] != u);
-        // std::cout << "Growing the tree (with root " << root[v] << ") by
-        // adding " << u << std::endl;
-        assert(mu[u] != v && mu[v] != u);
-        assert(phi[mu[u]] == mu[u]);
         outer.push_back(mu[u]);
         phi[u] = v;
         root[u] = root[v];
         root[mu[u]] = root[v];
       } else if ((mu[u] != u && phi[mu[u]] == mu[u]) || ro[u] == ro[v]) {
-        // std::cout << "Found inner vertex " << u << std::endl;
         continue;
       } else if (root[u] != root[v]) {
-        assert(mu[u] != v && mu[v] != u);
-        // std::cout << "Augmenting trees of " << u << " and " << v <<
-        // std::endl; std::cout << "With roots " << root[u] << " and " <<
-        // root[v]
-        //           << " respectively" << std::endl;
+        assert(root[v] != -1);
         vec p_u, p_v = {};
 
         for (ED::NodeId z = mu[v]; z != mu[z]; z = mu[phi[z]]) {
           p_v.push_back(z);
           p_v.push_back(phi[z]);
         }
-        assert(p_v.empty() || phi[p_v.back()] == root[v]);
-        assert(p_v.size() % 2 == 0);
         for (ED::NodeId z = mu[u]; z != mu[z]; z = mu[phi[z]]) {
           p_u.push_back(z);
           p_u.push_back(phi[z]);
         }
-        assert(p_u.empty() || phi[p_u.back()] == root[u]);
-        assert(p_u.size() % 2 == 0);
-
         for (ED::NodeId i = 0; i < p_v.size(); i += 2) {
           mu[p_v[i]] = p_v[i + 1];
           mu[p_v[i + 1]] = p_v[i];
@@ -84,8 +63,9 @@ vec edmonds(ED::Graph graph) {
         }
         mu[v] = u;
         mu[u] = v;
-        assert(mu[root[u]] != root[u]);
-        assert(mu[root[v]] != root[v]);
+
+        for (ED::NodeId i = 0; i < graph.num_nodes(); i++)
+          assert(mu[mu[i]] == i);
 
         // Reset all trees
         outer.clear();
@@ -102,83 +82,54 @@ vec edmonds(ED::Graph graph) {
           ro[i] = i;
           // }
         }
+        M++;
         break;
       } else {
-        if (mu[u] != v && mu[v] != u)
-          continue;
-        // std::cout << "Shrinking a blossom " << u << " and " << v <<
-        // std::endl; std::cout << "Their roots are " << root[u] << " and " <<
-        // root[v]
-        //           << std::endl;
-        vec p_u, p_v = {};
+        assert(root[u] == root[v]);
+        vec p_v = {ro[v]};
+        vec p_u = {ro[u]};
 
-        for (ED::NodeId z = v; z != mu[z]; z = phi[mu[z]]) {
-          if (ro[z] == z)
-            p_v.push_back(z);
+        while (p_u.back() != root[u]) {
+          p_u.push_back(ro[phi[mu[p_u.back()]]]);
         }
-        for (ED::NodeId z = u; z != mu[z]; z = phi[mu[z]]) {
-          if (ro[z] == z)
-            p_u.push_back(z);
-        }
-        p_u.push_back(root[u]);
-        p_v.push_back(root[v]);
 
-        // Define r
+        while (p_v.back() != root[v]) {
+          p_v.push_back(ro[phi[mu[p_v.back()]]]);
+        }
+
         while (p_v.size() > 1 && p_u.size() > 1 &&
-               p_v.end()[-2] == p_u.end()[-2]) {
-          p_v.pop_back();
+               p_v[p_v.size() - 2] == p_u[p_u.size() - 2]) {
           p_u.pop_back();
+          p_v.pop_back();
         }
-        assert(p_v.back() == p_u.back());
+        assert(p_u.back() == p_v.back());
+        assert(p_v.size() < 2 || p_u.size() < 2 ||
+               (p_v[p_v.size() - 2] != p_u[p_u.size() - 2]));
         ED::NodeId r = p_u.back();
-        // std::cout << "Their first shared blossom base is " << r << std::endl;
 
-        // Change phi
-        if (ro[u] != r) {
-          ED::NodeId z = mu[u];
-          while (phi[z] != r) {
-            if (ro[phi[z]] != r)
-              phi[phi[z]] = z;
-            z = mu[phi[z]];
-          }
-        }
         if (ro[v] != r) {
-          ED::NodeId z = mu[v];
-          while (phi[z] != r) {
-            if (ro[phi[z]] != r)
-              phi[phi[z]] = z;
-            z = mu[phi[z]];
-          }
-        }
-
-        if (ro[u] != r) {
-          phi[u] = v;
-        }
-        if (ro[v] != r) {
+          assert(p_v.size() > 1);
+          for (ED::NodeId z = mu[v]; ro[phi[z]] != r; z = mu[phi[z]])
+            phi[phi[z]] = z;
           phi[v] = u;
         }
 
-        for (ED::NodeId w = 0; w < graph.num_nodes(); w++) {
-          if (root[w] == root[u] &&
-              (std::find(p_v.begin(), p_v.end(), ro[w]) != p_v.end() ||
-               std::find(p_u.begin(), p_u.end(), ro[w]) != p_u.end()))
-            ro[w] = r;
+        if (ro[u] != r) {
+          assert(p_u.size() > 1);
+          for (ED::NodeId z = mu[u]; ro[phi[z]] != r; z = mu[phi[z]])
+            phi[phi[z]] = z;
+          phi[u] = v;
         }
+
+        for (ED::NodeId z = 0; z < graph.num_nodes(); z++)
+          if (root[z] == root[u] &&
+              (std::find(p_v.begin(), p_v.end(), ro[phi[z]]) != p_v.end() ||
+               std::find(p_u.begin(), p_u.end(), ro[phi[z]]) != p_u.end()))
+            ro[z] = r;
       }
     }
-    // std::cout << "Okay that was all from " << v << std::endl;
-    // for (ED::NodeId i = 0; i < mu.size(); i++)
-    //   std::cout << " " << mu[i] << "  ";
-    // std::cout << std::endl;
-
-    // int nu = 0;
-    // for (ED::NodeId i = 0; i < mu.size(); i++)
-    //   if (mu[i] != i)
-    //     nu++;
-    // nu = nu / 2;
-    // std::cout << "Matching is of size " << nu << std::endl;
-
-    // std::cout << std::endl;
+    if (M % 500 == 0)
+      std::cout << "Matching: " << M << std::endl;
   }
   return mu;
 }
@@ -196,31 +147,12 @@ int main(int argc, char **argv) {
 
   vec mu = edmonds(graph);
 
-  std::cout << "I finished!" << std::endl;
-
-  // ED::Graph greedy_matching_as_graph{graph.num_nodes()};
-  // for (ED::NodeId node_id = 0; node_id < graph.num_nodes(); ++node_id) {
-  //   if (greedy_matching_as_graph.node(node_id).neighbors().empty()) {
-  //     for (ED::NodeId neighbor_id : graph.node(node_id).neighbors()) {
-  //       if (greedy_matching_as_graph.node(neighbor_id).neighbors().empty())
-  //       {
-  //         greedy_matching_as_graph.add_edge(node_id, neighbor_id);
-  //         break; // Do not add more edges incident to this node!
-  //       }
-  //     }
-  //   }
-  // }
-
-  // for (ED::NodeId i = 0; i < mu.size(); i++)
-  //   std::cout << " " << mu[i] << "  ";
-  // std::cout << std::endl;
-
   int nu = 0;
   for (ED::NodeId i = 0; i < mu.size(); i++)
     if (mu[i] != i)
       nu++;
   nu = nu / 2;
-  std::cout << "Matching is of size " << nu << std::endl;
+  std::cout << "Maximum matching is of size: " << nu << std::endl;
 
   std::cout << std::flush;
   return EXIT_SUCCESS;
