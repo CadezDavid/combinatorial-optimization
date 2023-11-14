@@ -182,6 +182,9 @@ private:
   void shrink(NodeId v, NodeId u);
   void grow(NodeId v, NodeId u);
   void augment(NodeId v, NodeId u);
+  bool is_outer(NodeId u);
+  bool is_inner(NodeId u);
+  bool is_out_of_forest(NodeId u);
 
   std::vector<NodeId> mu;
   std::vector<NodeId> phi;

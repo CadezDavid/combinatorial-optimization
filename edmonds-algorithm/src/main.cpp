@@ -11,13 +11,12 @@ int main(int argc, char **argv) {
     return EXIT_FAILURE;
   }
 
-  std::cout << "asd";
   std::fstream input_file_graph{argv[1]};
   ED::Graph graph = ED::Graph::read_dimacs(input_file_graph);
+  std::cout << "Number of vertices = " << graph.num_nodes() << std::endl;
 
   std::chrono::steady_clock::time_point begin =
       std::chrono::steady_clock::now();
-  std::cout << "asd";
 
   std::vector<ED::NodeId> mu = graph.edmonds();
 
@@ -31,6 +30,12 @@ int main(int argc, char **argv) {
       nu++;
   nu = nu / 2;
   std::cout << "Found matching of size: " << nu << std::endl;
+
+  // ED::Graph matching_subgraph = ED::Graph(graph.num_nodes());
+  // for (ED::NodeId i = 0; i < mu.size(); i++)
+  //   if (i < mu[i])
+  //     matching_subgraph.add_edge(i, mu[i]);
+  // std::cout << matching_subgraph << std::endl;
 
   std::cout << std::flush;
   return EXIT_SUCCESS;

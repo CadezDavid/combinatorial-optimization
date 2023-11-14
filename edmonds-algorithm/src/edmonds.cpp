@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <chrono>
 #include <deque>
+#include <numeric>
 
 #include "graph.cpp"
 
@@ -49,41 +50,48 @@ void Graph::grow(NodeId v, NodeId u) {
 }
 
 void Graph::augment(NodeId v, NodeId u) {
-  std::vector<NodeId> p_u, p_v = {};
-
-  for (NodeId z = mu[v]; z != mu[z]; z = mu[phi[z]]) {
-    p_v.push_back(z);
-    p_v.push_back(phi[z]);
+  NodeId z = u;
+  NodeId w = mu[u];
+  while (w != root[u]) {
+    z = w;
+    w = mu[phi[w]];
+    mu[phi[z]] = z;
+    mu[z] = phi[z];
+    z = mu[w];
   }
-  for (NodeId z = mu[u]; z != mu[z]; z = mu[phi[z]]) {
-    p_u.push_back(z);
-    p_u.push_back(phi[z]);
-  }
-  for (NodeId i = 0; i < p_v.size(); i += 2) {
-    mu[p_v[i]] = p_v[i + 1];
-    mu[p_v[i + 1]] = p_v[i];
-  }
-  for (NodeId i = 0; i < p_u.size(); i += 2) {
-    mu[p_u[i]] = p_u[i + 1];
-    mu[p_u[i + 1]] = p_u[i];
+  z = v;
+  w = mu[v];
+  while (w != root[v]) {
+    z = w;
+    w = mu[phi[w]];
+    mu[phi[z]] = z;
+    mu[z] = phi[z];
+    z = mu[w];
   }
   mu[v] = u;
   mu[u] = v;
 }
 
 std::vector<NodeId> Graph::edmonds() {
-  mu = std::vector<NodeId>(num_nodes());
-  phi = std::vector<NodeId>(num_nodes());
-  ro = std::vector<NodeId>(num_nodes());
-  root = std::vector<NodeId>(num_nodes());
   std::deque<NodeId> outer = {};
 
+  std::iota(mu.begin(), mu.end(), 0);
+  std::iota(phi.begin(), phi.end(), 0);
+  std::iota(ro.begin(), ro.end(), 0);
+  std::iota(root.begin(), root.end(), 0);
+
   for (NodeId i = 0; i < num_nodes(); i++) {
-    outer.push_back(i);
-    mu[i] = i;
-    phi[i] = i;
-    ro[i] = i;
-    root[i] = i;
+    for (NodeId j : node(i).neighbors()) {
+      if (mu[i] == i && mu[j] == j) {
+        mu[i] = j;
+        mu[j] = i;
+        break;
+      }
+    }
+  }
+  for (NodeId i = 0; i < num_nodes(); i++) {
+    if (mu[i] == i)
+      outer.push_back(i);
   }
 
   NodeId v;
@@ -92,20 +100,19 @@ std::vector<NodeId> Graph::edmonds() {
     outer.pop_back();
 
     for (NodeId u : node(v).neighbors()) {
-      if (phi[u] == u && phi[mu[u]] == mu[u] && mu[u] != u) {
+      if (is_out_of_forest(u)) {
         grow(v, u);
         outer.push_back(mu[u]);
-      } else if ((mu[u] != u && phi[mu[u]] == mu[u]) || ro[u] == ro[v]) {
+      } else if (is_inner(u) || ro[u] == ro[v]) {
         continue;
-      } else if (root[u] != root[v]) {
+      } else if (root[v] != root[u]) {
         augment(v, u);
-
         outer.clear();
         for (NodeId i = 0; i < num_nodes(); i++) {
           if (root[i] == root[u] || root[i] == root[v]) {
             phi[i] = i;
             ro[i] = i;
-          } else if (mu[i] == i || phi[mu[i]] != mu[i]) {
+          } else if (is_outer(i)) {
             outer.push_front(i);
           }
         }
@@ -118,4 +125,14 @@ std::vector<NodeId> Graph::edmonds() {
 
   return mu;
 }
+inline bool Graph::is_outer(NodeId u) {
+  return mu[u] == u || phi[mu[u]] != mu[u];
+}
+inline bool Graph::is_inner(NodeId u) {
+  return phi[mu[u]] == mu[u] && phi[u] != u;
+}
+inline bool Graph::is_out_of_forest(NodeId u) {
+  return phi[u] == u && phi[mu[u]] == mu[u] && mu[u] != u;
+}
+
 } // namespace ED
