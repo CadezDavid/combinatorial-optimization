@@ -173,9 +173,20 @@ public:
   **/
   friend std::ostream &operator<<(std::ostream &str, Graph const &graph);
 
+  std::vector<NodeId> edmonds();
+
 private:
   std::vector<Node> _nodes;
   size_type _num_edges;
+
+  void shrink(NodeId v, NodeId u);
+  void grow(NodeId v, NodeId u);
+  void augment(NodeId v, NodeId u);
+
+  std::vector<NodeId> mu;
+  std::vector<NodeId> phi;
+  std::vector<NodeId> ro;
+  std::vector<NodeId> root;
 }; // class Graph
 
 // Calling a function usually has some constant time overhead.

@@ -11,13 +11,15 @@ int main(int argc, char **argv) {
     return EXIT_FAILURE;
   }
 
+  std::cout << "asd";
   std::fstream input_file_graph{argv[1]};
-  ED::Graph const graph = ED::Graph::read_dimacs(input_file_graph);
+  ED::Graph graph = ED::Graph::read_dimacs(input_file_graph);
 
   std::chrono::steady_clock::time_point begin =
       std::chrono::steady_clock::now();
+  std::cout << "asd";
 
-  std::vector<ED::NodeId> mu = edmonds(graph);
+  std::vector<ED::NodeId> mu = graph.edmonds();
 
   std::chrono::duration<double> elapsed =
       std::chrono::steady_clock::now() - begin;
