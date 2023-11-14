@@ -72,6 +72,10 @@ void Graph::augment(NodeId v, NodeId u) {
 }
 
 std::vector<NodeId> Graph::edmonds() {
+  mu = std::vector<NodeId>(num_nodes());
+  phi = std::vector<NodeId>(num_nodes());
+  ro = std::vector<NodeId>(num_nodes());
+  root = std::vector<NodeId>(num_nodes());
   std::deque<NodeId> outer = {};
 
   for (NodeId i = 0; i < num_nodes(); i++) {
