@@ -1,0 +1,73 @@
+\newcommand{\sheet}{5}
+\input{Header.tex}
+
+\begin{document}
+
+\maketitle
+
+\begin{exercise}{3}
+    Let $G$ a graph and $T \subseteq V(G)$ with $|T|$ even.
+    \begin{enumerate}[i)]
+        \item{
+                Suppose the set $F \subseteq E(G)$ intersects every $T$-join.
+                Take some $t \in T$. Now look at all $v \in V(G)$ for which
+                there exists a $t$-$v$-path that does not intersect $F$:
+                \begin{equation*}
+                    X = \{ v \in V(G) \mid \text{exists a $t$-$v$-path that does
+                    not intersect $F$} \} \cup \{t\}
+                \end{equation*}
+
+                Use induction.
+
+                Suppose $T = \{t, s\}$. Then $T$-joins are exactly
+                $t$-$s$-paths. We are assuming every such path intersects $F$.
+                In this case the set $X$ then only contains one element, and it
+                clearly defines a $T$-cut $C = \delta(X)$, because every edge
+                $\{u, v\} \in C$ with $u \in X$ and $v \notin X$ it must hold
+                $\{u, v\} \in F$, otherwise we would get $v \in X$.
+
+                And the induction step:
+
+                \begin{itemize}
+                    \item{If $|X \cap T|$ odd, then we found a $T$-cut that is
+                        contained in $F$, namely the cut $C = \delta(X)$. Lets
+                        quickly argument why this is true: every edge $\{u, v\}
+                        \in C$ (with $u \in X$ and $v \notin X$) has to lie in
+                        $F$, otherwise we could extend the path from $t$ to $u$
+                        with the edge $\{u, v\}$ and get $v \in X$.}
+                    \item{If $|X \cap T|$ even, then for every $t_i \in X \cap
+                        T$, $t_i \not= t$, define the path $p_i$ to be the path
+                        from $t$ to $t_i$ that does not intersect $F$. Take
+                        a symmetric difference of all these paths
+                        $\otimes p_i$, which is,
+                        using a proposition from the lectures, a $T \cap
+                        X$-join. Let $T' = T \setminus X$. If there existed a
+                        $T'$-join $J$ would not intersect $F$, then $\otimes p_i
+                        \otimes J$ would be a $T$-join that does not intersect
+                        $F$. So every $T'$-join intersects $F$. Using inductions
+                        hypothesis we get that there exists a $T'$-cut $C =
+                        \delta(X')$, which is contained in $F$. Clearly $t \in
+                        X'$ if and only if $T \cap X \subseteq X'$, so $|X'
+                        \cap T|$ is odd, which proves it is a $T$-cut.
+                        }
+                \end{itemize}
+                In both cases we found a $T$-cut that is contained in $F$.
+
+                The other direction is obvious using the proposition from the
+                lectures, which says that every $T$-cut and $T$-join intersect.}
+        \item{First remember the proposition from the lectures, saying that a
+            subgraph $G' \subseteq G$ contains a $T$-join if and only if every
+            connected component of $G'$ contains even number of elements in $T$. 
+
+            Define $V' = \cup_{e \in F} e$ and a graph $G' = (V', F)$. Suppose
+            there exists a connected component $C' \subseteq G'$ for which
+            $|V(C') \cap T|$ is odd. Then simply taking $C := \delta(V(C'))$ is
+            a $T$-cut that does not intersect $F$ (because $C'$ is by definition
+            a connected component in $G'$).
+
+            The other direction is again obvious using the proposition from the
+            lectures, which says that every $T$-cut and $T$-join intersect.}
+    \end{enumerate}
+\end{exercise}
+
+\end{document}

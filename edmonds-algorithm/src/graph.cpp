@@ -1,4 +1,7 @@
+#ifndef GRAPH_CPP
+#define GRAPH_CPP
 #include "graph.hpp" // always include corresponding header first
+                     //
 
 /**
  * Note this included everything from the header similar to copy-pasting it
@@ -7,7 +10,6 @@
  * though, so we need to include the actual implementation of std::istream and
  * std::ostream.
  */
-#include <algorithm>
 #include <iostream>
 
 /**
@@ -59,10 +61,7 @@ namespace ED {
 //! \c Node definitions
 /////////////////////////////////////////////
 
-void Node::add_neighbor(NodeId const id) {
-  if (std::find(_neighbors.begin(), _neighbors.end(), id) == _neighbors.end())
-    _neighbors.push_back(id);
-}
+void Node::add_neighbor(NodeId const id) { _neighbors.push_back(id); }
 
 /////////////////////////////////////////////
 //! \c Graph definitions
@@ -162,3 +161,4 @@ std::ostream &operator<<(std::ostream &output, Graph const &graph) {
 }
 
 } // namespace ED
+#endif /* GRAPH_HPP */

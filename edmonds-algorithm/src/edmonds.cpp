@@ -1,23 +1,83 @@
 #include <algorithm>
-#include <assert.h>
 #include <chrono>
 #include <deque>
-#include <fstream>  // For reading input files.
-#include <iostream> // For writing to the standard output.
-#include <numeric>
-#include <tuple>
 
 #include "graph.cpp"
 
-using vec = std::vector<ED::NodeId>;
+using vector = std::vector<ED::NodeId>;
 
-vec edmonds(ED::Graph graph) {
-  vec mu(graph.num_nodes());
-  vec phi(graph.num_nodes());
-  vec ro(graph.num_nodes());
-  vec root(graph.num_nodes());
+void shrink(vector &mu, vector &phi, vector &ro, vector &root,
+            const ED::Graph &graph, ED::NodeId v, ED::NodeId u) {
+  vector p_v = {ro[v]};
+  vector p_u = {ro[u]};
+
+  while (p_u.back() != root[u])
+    p_u.push_back(ro[phi[mu[p_u.back()]]]);
+
+  while (p_v.back() != root[v])
+    p_v.push_back(ro[phi[mu[p_v.back()]]]);
+
+  while (p_v.size() > 1 && p_u.size() > 1 &&
+         p_v[p_v.size() - 2] == p_u[p_u.size() - 2]) {
+    p_u.pop_back();
+    p_v.pop_back();
+  }
+  ED::NodeId r = p_u.back();
+
+  if (ro[v] != r) {
+    for (ED::NodeId z = mu[v]; ro[phi[z]] != r; z = mu[phi[z]])
+      phi[phi[z]] = z;
+    phi[v] = u;
+  }
+
+  if (ro[u] != r) {
+    for (ED::NodeId z = mu[u]; ro[phi[z]] != r; z = mu[phi[z]])
+      phi[phi[z]] = z;
+    phi[u] = v;
+  }
+
+  for (ED::NodeId z = 0; z < graph.num_nodes(); z++)
+    if (root[z] == root[u] &&
+        (std::find(p_v.begin(), p_v.end(), ro[phi[z]]) != p_v.end() ||
+         std::find(p_u.begin(), p_u.end(), ro[phi[z]]) != p_u.end()))
+      ro[z] = r;
+}
+
+void grow(vector &mu, vector &phi, vector &root, ED::NodeId v, ED::NodeId u) {
+  phi[u] = v;
+  root[u] = root[v];
+  root[mu[u]] = root[v];
+}
+
+void augment(vector &mu, vector &phi, ED::NodeId v, ED::NodeId u) {
+  vector p_u, p_v = {};
+
+  for (ED::NodeId z = mu[v]; z != mu[z]; z = mu[phi[z]]) {
+    p_v.push_back(z);
+    p_v.push_back(phi[z]);
+  }
+  for (ED::NodeId z = mu[u]; z != mu[z]; z = mu[phi[z]]) {
+    p_u.push_back(z);
+    p_u.push_back(phi[z]);
+  }
+  for (ED::NodeId i = 0; i < p_v.size(); i += 2) {
+    mu[p_v[i]] = p_v[i + 1];
+    mu[p_v[i + 1]] = p_v[i];
+  }
+  for (ED::NodeId i = 0; i < p_u.size(); i += 2) {
+    mu[p_u[i]] = p_u[i + 1];
+    mu[p_u[i + 1]] = p_u[i];
+  }
+  mu[v] = u;
+  mu[u] = v;
+}
+
+vector edmonds(const ED::Graph graph) {
+  vector mu(graph.num_nodes());
+  vector phi(graph.num_nodes());
+  vector ro(graph.num_nodes());
+  vector root(graph.num_nodes());
   std::deque<ED::NodeId> outer = {};
-  int M = 0;
 
   for (ED::NodeId i = 0; i < graph.num_nodes(); i++) {
     outer.push_front(i);
@@ -29,123 +89,33 @@ vec edmonds(ED::Graph graph) {
 
   ED::NodeId v;
   while (!outer.empty()) {
-    v = outer.front();
-    outer.pop_front();
+    v = outer.back();
+    outer.pop_back();
 
     for (ED::NodeId u : graph.node(v).neighbors()) {
-      if (root[u] == -1) {
+      if (phi[u] == u && phi[mu[u]] == mu[u] && mu[u] != u) {
+        grow(mu, phi, root, v, u);
         outer.push_back(mu[u]);
-        phi[u] = v;
-        root[u] = root[v];
-        root[mu[u]] = root[v];
       } else if ((mu[u] != u && phi[mu[u]] == mu[u]) || ro[u] == ro[v]) {
         continue;
       } else if (root[u] != root[v]) {
-        assert(root[v] != -1);
-        vec p_u, p_v = {};
+        augment(mu, phi, v, u);
 
-        for (ED::NodeId z = mu[v]; z != mu[z]; z = mu[phi[z]]) {
-          p_v.push_back(z);
-          p_v.push_back(phi[z]);
-        }
-        for (ED::NodeId z = mu[u]; z != mu[z]; z = mu[phi[z]]) {
-          p_u.push_back(z);
-          p_u.push_back(phi[z]);
-        }
-        for (ED::NodeId i = 0; i < p_v.size(); i += 2) {
-          mu[p_v[i]] = p_v[i + 1];
-          mu[p_v[i + 1]] = p_v[i];
-        }
-        for (ED::NodeId i = 0; i < p_u.size(); i += 2) {
-          mu[p_u[i]] = p_u[i + 1];
-          mu[p_u[i + 1]] = p_u[i];
-        }
-        mu[v] = u;
-        mu[u] = v;
-
-        // Reset only augmented trees
         outer.clear();
-        ED::NodeId root_v = root[v];
-        ED::NodeId root_u = root[u];
         for (ED::NodeId i = 0; i < graph.num_nodes(); i++) {
-          if (root[i] == root_v || root[i] == root_u) {
-            root[i] = -1;
+          if (root[i] == root[u] || root[i] == root[v]) {
             phi[i] = i;
             ro[i] = i;
           } else if (mu[i] == i || phi[mu[i]] != mu[i]) {
-            outer.push_back(i);
+            outer.push_front(i);
           }
         }
-        M++;
         break;
       } else {
-        vec p_v = {ro[v]};
-        vec p_u = {ro[u]};
-
-        while (p_u.back() != root[u])
-          p_u.push_back(ro[phi[mu[p_u.back()]]]);
-
-        while (p_v.back() != root[v])
-          p_v.push_back(ro[phi[mu[p_v.back()]]]);
-
-        while (p_v.size() > 1 && p_u.size() > 1 &&
-               p_v[p_v.size() - 2] == p_u[p_u.size() - 2]) {
-          p_u.pop_back();
-          p_v.pop_back();
-        }
-        ED::NodeId r = p_u.back();
-
-        if (ro[v] != r) {
-          for (ED::NodeId z = mu[v]; ro[phi[z]] != r; z = mu[phi[z]])
-            phi[phi[z]] = z;
-          phi[v] = u;
-        }
-
-        if (ro[u] != r) {
-          for (ED::NodeId z = mu[u]; ro[phi[z]] != r; z = mu[phi[z]])
-            phi[phi[z]] = z;
-          phi[u] = v;
-        }
-
-        for (ED::NodeId z = 0; z < graph.num_nodes(); z++)
-          if (root[z] == root[u] &&
-              (std::find(p_v.begin(), p_v.end(), ro[phi[z]]) != p_v.end() ||
-               std::find(p_u.begin(), p_u.end(), ro[phi[z]]) != p_u.end()))
-            ro[z] = r;
+        shrink(mu, phi, ro, root, graph, v, u);
       }
     }
-    if (M % 100 == 0)
-      std::cout << "Current size of matching: " << M << std::endl;
   }
+
   return mu;
-}
-
-int main(int argc, char **argv) {
-  if (argc != 2) {
-    std::cout << "Expected one argument, but found " << argc - 1 << std::endl;
-    return EXIT_FAILURE;
-  }
-
-  std::fstream input_file_graph{argv[1]};
-  ED::Graph const graph = ED::Graph::read_dimacs(input_file_graph);
-
-  std::chrono::steady_clock::time_point begin =
-      std::chrono::steady_clock::now();
-
-  vec mu = edmonds(graph);
-
-  std::chrono::duration<double> elapsed =
-      std::chrono::steady_clock::now() - begin;
-  std::cout << "Time elapsed (sec) = " << elapsed.count() << std::endl;
-
-  int nu = 0;
-  for (ED::NodeId i = 0; i < mu.size(); i++)
-    if (mu[i] != i)
-      nu++;
-  assert(nu % 2 == 0);
-  nu = nu / 2;
-  std::cout << "Found matching of size: " << nu << std::endl;
-
-  std::cout << std::flush;
-  return EXIT_SUCCESS;
 }
