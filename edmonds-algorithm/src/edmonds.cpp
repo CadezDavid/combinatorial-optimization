@@ -31,8 +31,6 @@ vec edmonds(ED::Graph graph) {
   while (!outer.empty()) {
     v = outer.front();
     outer.pop_front();
-    // if (root[v] == -1)
-    //   break;
 
     for (ED::NodeId u : graph.node(v).neighbors()) {
       if (root[u] == -1) {
@@ -65,10 +63,7 @@ vec edmonds(ED::Graph graph) {
         mu[v] = u;
         mu[u] = v;
 
-        for (ED::NodeId i = 0; i < graph.num_nodes(); i++)
-          assert(mu[mu[i]] == i);
-
-        // Reset all trees
+        // Reset only augmented trees
         outer.clear();
         ED::NodeId root_v = root[v];
         ED::NodeId root_u = root[u];
@@ -77,7 +72,7 @@ vec edmonds(ED::Graph graph) {
             root[i] = -1;
             phi[i] = i;
             ro[i] = i;
-          } else if (root[i] != -1 && (mu[i] == i || phi[mu[i]] != mu[i])) {
+          } else if (mu[i] == i || phi[mu[i]] != mu[i]) {
             outer.push_back(i);
           }
         }
@@ -101,14 +96,12 @@ vec edmonds(ED::Graph graph) {
         ED::NodeId r = p_u.back();
 
         if (ro[v] != r) {
-          assert(p_v.size() > 1);
           for (ED::NodeId z = mu[v]; ro[phi[z]] != r; z = mu[phi[z]])
             phi[phi[z]] = z;
           phi[v] = u;
         }
 
         if (ro[u] != r) {
-          assert(p_u.size() > 1);
           for (ED::NodeId z = mu[u]; ro[phi[z]] != r; z = mu[phi[z]])
             phi[phi[z]] = z;
           phi[u] = v;
@@ -122,7 +115,7 @@ vec edmonds(ED::Graph graph) {
       }
     }
     if (M % 100 == 0)
-      std::cout << "Matching: " << M << std::endl;
+      std::cout << "Current size of matching: " << M << std::endl;
   }
   return mu;
 }
@@ -141,21 +134,17 @@ int main(int argc, char **argv) {
 
   vec mu = edmonds(graph);
 
-  std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-
-  std::cout << "Time elapsed (sec) = "
-            << (std::chrono::duration_cast<std::chrono::microseconds>(end -
-                                                                      begin)
-                    .count()) /
-                   1000000.0
-            << std::endl;
+  std::chrono::duration<double> elapsed =
+      std::chrono::steady_clock::now() - begin;
+  std::cout << "Time elapsed (sec) = " << elapsed.count() << std::endl;
 
   int nu = 0;
   for (ED::NodeId i = 0; i < mu.size(); i++)
     if (mu[i] != i)
       nu++;
+  assert(nu % 2 == 0);
   nu = nu / 2;
-  std::cout << "Maximum matching is of size: " << nu << std::endl;
+  std::cout << "Found matching of size: " << nu << std::endl;
 
   std::cout << std::flush;
   return EXIT_SUCCESS;
