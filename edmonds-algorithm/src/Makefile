@@ -12,8 +12,8 @@ else
    OPTFLAGS=$(OPTFLAGS_OPT)
 endif
 
-CXX=clang++
-CC=clang
+CXX=g++
+CC=gcc
 LN=ln
 RM=rm
 MKDIR=mkdir
