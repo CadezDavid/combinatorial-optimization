@@ -13,19 +13,21 @@ namespace ED {
  * @return void
  */
 void Graph::shrink(NodeId v, NodeId u) {
-  // These will be bases of outer blossoms on paths from v and u to their root
+  // These will be bases of blossoms on paths from v and u to their root
   // (which we are assuming to be the same!).
   std::vector<NodeId> p_v = {ro[v]};
   std::vector<NodeId> p_u = {ro[u]};
 
   while (p_u.back() != root[u]) {
-    p_u.push_back(mu[p_u.back()]);
-    p_u.push_back(ro[phi[p_u.back()]]);
+    p_u.push_back(mu[p_u.back()]); // Add inner blossom (by assumption its own
+                                   // base)
+    p_u.push_back(ro[phi[p_u.back()]]); // Add base of outer blossom
   }
 
   while (p_v.back() != root[v]) {
-    p_v.push_back(mu[p_v.back()]);
-    p_v.push_back(ro[phi[p_v.back()]]);
+    p_v.push_back(mu[p_v.back()]); // Add inner blossom (by assumption its own
+                                   // base)
+    p_v.push_back(ro[phi[p_v.back()]]); // Add base of outer blossom
   }
 
   // This loop removes items at the end of p_v and p_u that are the same.
@@ -51,11 +53,7 @@ void Graph::shrink(NodeId v, NodeId u) {
   }
 
   // Change the blossom base of all those elements whose current blossom base
-  // lies on either of paths v - r and u - r. Change it to r. Since p_v and p_u
-  // only contain bases of outer blossoms, we have to call phi on the element to
-  // move from an inner blossom down to an outer one. This might change the
-  // ro value of inner blossom that do not lie on the blossom, but since we
-  // never use that value, that is okay.
+  // lies on either of paths v - r and u - r. Change it to r.
   for (NodeId z = 0; z < num_nodes(); z++)
     if (root[z] == root[u] &&
         (std::find(p_v.begin(), p_v.end(), ro[z]) != p_v.end() ||
@@ -110,13 +108,19 @@ void Graph::augment(NodeId v, NodeId u) {
  * of a given index.
  */
 std::vector<NodeId> Graph::edmonds() {
+  // A dequeue that will hold all outer vertices that have to be checked.
+  // Sometimes we add to the front, sometimes to the back, which we decided
+  // based on intuition how quickly should the vertex be checked. But in the end
+  // it does not matter on which end you put new vertices (in the algorithm the
+  // order of checking is not specified).
   std::deque<NodeId> outer = {};
 
+  // Fill all vectors with increasing values, starting with 0. This corresponds
+  // to functions being identities at the start.
   std::iota(mu.begin(), mu.end(), 0);
   std::iota(phi.begin(), phi.end(), 0);
   std::iota(ro.begin(), ro.end(), 0);
   std::iota(root.begin(), root.end(), 0);
-  int M = 0;
 
   // Greedy matching
   for (NodeId i = 0; i < num_nodes(); i++) {
@@ -124,12 +128,13 @@ std::vector<NodeId> Graph::edmonds() {
       if (mu[i] == i && mu[j] == j) {
         mu[i] = j;
         mu[j] = i;
-        M++;
         break;
       }
     }
   }
-  // Outer ones are the ones that are not yet matched
+
+  // Outer ones are the ones that are unmatched vertices, they will be bases of
+  // the trees.
   for (NodeId i = 0; i < num_nodes(); i++) {
     if (mu[i] == i)
       outer.push_back(i);
@@ -141,15 +146,16 @@ std::vector<NodeId> Graph::edmonds() {
     outer.pop_back();
 
     for (NodeId u : node(v).neighbors()) {
-      if (is_out_of_forest(u)) {
+      if (is_inner(u) || ro[u] == ro[v]) {
+        continue;
+      } else if (is_out_of_forest(u)) {
         grow(v, u);
         outer.push_back(mu[u]); // mu[u] is a new outer vertex, so we add it to
                                 // stack/queue
-      } else if (is_inner(u) || ro[u] == ro[v]) {
-        continue;
       } else if (root[v] != root[u]) {
         augment(v, u);
-        M++;
+        // Here we do not clear all trees, but only the ones we augmented. But
+        // we do add all outer vertices back on the dequeue.
         outer.clear();
         for (NodeId i = 0; i < num_nodes(); i++) {
           if (root[i] == root[u] || root[i] == root[v]) {
@@ -160,11 +166,10 @@ std::vector<NodeId> Graph::edmonds() {
           }
         }
         break;
-      } else {
+      } else { // in this case u and v are outer vertices of the same tree (but
+               // in different blossoms)
         shrink(v, u);
       }
-      if (M % 500 == 0)
-        std::cout << M << std::endl;
     }
   }
 
