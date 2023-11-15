@@ -7,6 +7,11 @@
 
 namespace ED {
 
+/**
+ * Shrinks the blossom, created by an edge u-v.
+ * @param nodes v and u
+ * @return void
+ */
 void Graph::shrink(NodeId v, NodeId u) {
   std::vector<NodeId> p_v = {ro[v]};
   std::vector<NodeId> p_u = {ro[u]};
@@ -43,12 +48,23 @@ void Graph::shrink(NodeId v, NodeId u) {
       ro[z] = r;
 }
 
+/**
+ * Grows the forest, by adding the vertex u to the tree of v.
+ * @param nodes v and u
+ * @return void
+ */
 void Graph::grow(NodeId v, NodeId u) {
   phi[u] = v;
   root[u] = root[v];
   root[mu[u]] = root[v];
 }
 
+/**
+ * Augments the matching, stored in mu, by augmenting the path
+ * root[v]-v-u-root[u].
+ * @param nodes v and u
+ * @return void
+ */
 void Graph::augment(NodeId v, NodeId u) {
   NodeId z = u;
   NodeId w = mu[u];
@@ -72,6 +88,12 @@ void Graph::augment(NodeId v, NodeId u) {
   mu[u] = v;
 }
 
+/**
+ * Edmonds blossom algorithm for computing maximum matching in a general graph.
+ * @param the graph itself
+ * @return a vector mu of length num_nodes and whose values represent the pair
+ * of a given index.
+ */
 std::vector<NodeId> Graph::edmonds() {
   std::deque<NodeId> outer = {};
 
