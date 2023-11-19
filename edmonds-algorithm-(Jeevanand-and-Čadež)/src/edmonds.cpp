@@ -61,24 +61,18 @@ void Graph::shrink(NodeId v, NodeId u) {
       ro[z] = r;
 }
 
-/**
- * Grows the forest, by adding the vertex u to the tree of v.
- * @param nodes v and u
- * @return void
- */
 void Graph::grow(NodeId v, NodeId u) {
   phi[u] = v;
+
+  // Define root of new nodes accordingly.
   root[u] = root[v];
   root[mu[u]] = root[v];
 }
 
-/**
- * Augments the matching, stored in mu, by augmenting the path
- * root[v]-v-u-root[u].
- * @param nodes v and u
- * @return void
- */
 void Graph::augment(NodeId v, NodeId u) {
+  // In this part we use loops to change values of mu along the paths v-root[v]
+  // and u-root[u], effectively augmenting the matching along the path
+  // root[v]-v-u-root[u].
   NodeId z = u;
   NodeId w = mu[u];
   while (w != root[u]) {
@@ -101,17 +95,11 @@ void Graph::augment(NodeId v, NodeId u) {
   mu[u] = v;
 }
 
-/**
- * Edmonds blossom algorithm for computing maximum matching in a general graph.
- * @param the graph itself
- * @return a vector mu of length num_nodes and whose values represent the pair
- * of a given index.
- */
 std::vector<NodeId> Graph::edmonds() {
-  // A dequeue that will hold all outer vertices that have to be checked.
+  // A dequeue that will hold all outer nodes that have to be checked.
   // Sometimes we add to the front, sometimes to the back, which we decided
-  // based on intuition how quickly should the vertex be checked. But in the end
-  // it does not matter on which end you put new vertices (in the algorithm the
+  // based on intuition how quickly should the node be checked. But in the end
+  // it does not matter on which end you put new nodes (in the algorithm the
   // order of checking is not specified).
   std::deque<NodeId> outer = {};
 
@@ -133,7 +121,7 @@ std::vector<NodeId> Graph::edmonds() {
     }
   }
 
-  // Outer ones are the ones that are unmatched vertices, they will be bases of
+  // Outer ones are the ones that are unmatched nodes, they will be bases of
   // the trees.
   for (NodeId i = 0; i < num_nodes(); i++) {
     if (mu[i] == i)
@@ -150,12 +138,14 @@ std::vector<NodeId> Graph::edmonds() {
         continue;
       } else if (is_out_of_forest(u)) {
         grow(v, u);
-        outer.push_back(mu[u]); // mu[u] is a new outer vertex, so we add it to
+        outer.push_back(mu[u]); // mu[u] is a new outer node, so we add it to
                                 // stack/queue
       } else if (root[v] != root[u]) {
         augment(v, u);
-        // Here we do not clear all trees, but only the ones we augmented. But
-        // we do add all outer vertices back on the dequeue.
+        // Here we do not clear all trees, but only the ones we augmented. After
+        // doing this we have to add all outer nodes back on dequeue, since
+        // some of their neightbors haven't been checked before because they
+        // were inner nodes of the (now) deleted trees.
         outer.clear();
         for (NodeId i = 0; i < num_nodes(); i++) {
           if (root[i] == root[u] || root[i] == root[v]) {
@@ -166,7 +156,7 @@ std::vector<NodeId> Graph::edmonds() {
           }
         }
         break;
-      } else { // in this case u and v are outer vertices of the same tree (but
+      } else { // in this case u and v are outer nodes of the same tree (but
                // in different blossoms)
         shrink(v, u);
       }
@@ -175,14 +165,4 @@ std::vector<NodeId> Graph::edmonds() {
 
   return mu;
 }
-inline bool Graph::is_outer(NodeId u) {
-  return mu[u] == u || phi[mu[u]] != mu[u];
-}
-inline bool Graph::is_inner(NodeId u) {
-  return phi[mu[u]] == mu[u] && phi[u] != u;
-}
-inline bool Graph::is_out_of_forest(NodeId u) {
-  return phi[u] == u && phi[mu[u]] == mu[u] && mu[u] != u;
-}
-
 } // namespace ED

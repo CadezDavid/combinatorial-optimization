@@ -72,9 +72,6 @@ void Node::add_neighbor(NodeId const id) { _neighbors.push_back(id); }
 // assigning values to them after they were default initialized.
 // Note you should initialize them in the same order
 // they were declare in back in the class body!
-// Graph::Graph(NodeId const num_nodes)
-//     : _nodes(num_nodes), _num_edges(0) {}
-
 Graph::Graph(NodeId const num_nodes)
     : _nodes(num_nodes), _num_edges(0), mu(num_nodes), phi(num_nodes),
       ro(num_nodes), root(num_nodes) {}

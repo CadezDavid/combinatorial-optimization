@@ -130,3 +130,4 @@ $(MAKECONFIG):
 
 clean:
 	@$(RM) -rf $(BUILDDIR)
+	@$(RM) $(EXECUTABLE_REL)

@@ -173,6 +173,13 @@ public:
   **/
   friend std::ostream &operator<<(std::ostream &str, Graph const &graph);
 
+  /**
+   * Edmonds blossom algorithm for computing maximum matching in a general
+   * graph.
+   * @param the graph itself
+   * @return a vector mu of length num_nodes and whose values represent the pair
+   * of a given index.
+   */
   std::vector<NodeId> edmonds();
 
 private:
@@ -180,15 +187,39 @@ private:
   size_type _num_edges;
 
   void shrink(NodeId v, NodeId u);
+  /**
+   * Grows the forest, by adding the node u to the tree of v.
+   * @param nodes v and u
+   * @return void
+   */
   void grow(NodeId v, NodeId u);
+  /**
+   * Augments the matching, stored in mu, by augmenting the path
+   * root[v]-v-u-root[u].
+   * @param nodes v and u
+   * @return void
+   */
   void augment(NodeId v, NodeId u);
+
+  /**
+   * Returns true if a given node is outer and false otherwise.
+   */
   bool is_outer(NodeId u);
+  /**
+   * Returns true if a given node is inner and false otherwise.
+   */
   bool is_inner(NodeId u);
+  /**
+   * Returns true if a given node is out-of-forest and false otherwise.
+   */
   bool is_out_of_forest(NodeId u);
 
+  // Functions used in Edmonds blossom algorithm.
   std::vector<NodeId> mu;
   std::vector<NodeId> phi;
   std::vector<NodeId> ro;
+  // Function indicating which tree a node belongs to. Its value is
+  // undefined for out-of-tree nodes! (Meaning it can be anything.)
   std::vector<NodeId> root;
 }; // class Graph
 
@@ -212,6 +243,17 @@ inline NodeId Graph::num_nodes() const { return _nodes.size(); }
 inline size_type Graph::num_edges() const { return _num_edges; }
 
 inline Node const &Graph::node(NodeId const id) const { return _nodes[id]; }
+
+inline bool Graph::is_outer(NodeId u) {
+  return mu[u] == u || phi[mu[u]] != mu[u];
+}
+inline bool Graph::is_inner(NodeId u) {
+  return phi[mu[u]] == mu[u] && phi[u] != u;
+}
+inline bool Graph::is_out_of_forest(NodeId u) {
+  return phi[u] == u && phi[mu[u]] == mu[u] && mu[u] != u;
+}
+
 // END: Inline section
 
 } // namespace ED

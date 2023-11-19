@@ -1,0 +1,75 @@
+\newcommand{\sheet}{6}
+\input{Header.tex}
+
+\begin{document}
+
+\maketitle
+
+\begin{exercise}{2}
+    We have an undirected graph $G$ and $T \subseteq V(G)$, with $|T| = 2k$.
+
+    We have to show that minimum cardinality $T$-cut in $G$ equals maximum of
+    $\min_i \lambda_{s_i, t_i}$ over pairings $T = \{s_1, t_1, \dots, s_k,
+    t_k\}$ where $\lambda_{s, t}$ denotes maximum number of pairwise
+    edge-disjoint $s$-$t$-paths.
+
+    First show that every $T$-cut will be bigger than $\min_i \lambda_{s_i,
+    t_i}$ for any pairing. Take a pairing $T = \{s_1, t_1, \dots, s_k, t_k\}$
+    and a $T$-cut $C = \delta(X)$. The cut $C$ has separate at least one pair
+    (say $\{s_j, t_j\}$), otherwise $|X \cap T|$ would be even. And since there
+    are at least $\min_i \lambda_{s_i, t_i}$ edge-disjoint $s_j$-$t_j$-paths, we
+    must have $|C| \geq \min_i \lambda_{s_i, t_i}$.
+
+    This gives us inequality that minimum cardinality of a $T$-cut is greater or
+    equal to the maximum of $\min_i \lambda_{s_i, t_i}$ over pairings $T$.
+
+    Now we have to show that this inequality is in fact equality.
+
+    Remember (from previous courses) that for vertices $s, t \in v(G)$,
+    the number of pariswise edge-disjoint $s$-$t$-paths is equal to the
+    cardinality of a minimum $s$-$t$-cut.
+    
+    And for computing $s$-$t$-cuts we have Gomory-Hu trees, so let $u \equiv 1$
+    and let $H$ be a Gomory-Hu tree for $(G, u)$. Then $\lambda_{s, t} = \min_{e
+    \in P_{s, t}} u(e)$, where $P_{s, t}$ is the (unique) $s$-$t$-path in $H$.
+
+    Then we use a theorem from the lectures, which stated that minimum capacity
+    $T$-cut can be found among fundamental ones in Gomory-Hu tree.
+
+    Define a subset of edges $F = \triangle_{s, t \in T, s\not=t} P_{s, t}$, a symmetric
+    difference over (unique) $s$-$t$-paths in Gomory-Hu tree over all pairs
+    $\{s, t\} \subseteq T$ (at this point $T$ is just a set, not a pairing).
+
+    \begin{claim}
+        For every edge in $e \in H$, the cut at edge $e$ is a $T$-cut if and
+        only if $e \in F$.
+    \end{claim}
+    \begin{proof_claim}
+        Let $e \in H$.
+        Removing an edge $e$, the tree $H$ splits into two components, say $C_1$
+        and $C_2$. Let $|C_1 \cap T| = p$ and $|C_2 \cap T| = r$. Since $2k =
+        p + r$, $p$ and $r$ have the same parity. Observe that $e$ lies exactly
+        on $pr$ paths, exactly on those, for which elements of the pair come
+        from different components.
+
+        Therefore: $e \in F$ $\Leftrightarrow$ $pr$ odd $\Leftrightarrow$ $p$
+        odd $\Leftrightarrow$ $e$ defines a $T$-cut.
+    \end{proof_claim}
+
+    So minimum cardinality $T$-cut can be found in $F$. Now we just have to find
+    a pairing, such that all paths will be contained $F$. This also follows from
+    the claim above: an edge $e \in E(H) \setminus F$ always splits the tree
+    into two components, each of which contains even number of vertices from
+    $T$. We can then use the claim on components and keep on removing edges in
+    $E(H) \setminus F$, at each step all components having even number of
+    elements from $T$.
+
+    Now take a pairing so that for each pair both elements lie in the same
+    connected component of $(H, F)$. The paths will all lie in $F$, therefore
+    \begin{equation*}
+        \min_i \lambda_{s_i, t_i} \geq \min_{e \in F} u(e) = \text{min.
+        cardinality $T$-cut}.
+    \end{equation*}
+\end{exercise}
+
+\end{document}
