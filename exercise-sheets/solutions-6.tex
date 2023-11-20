@@ -72,4 +72,49 @@
     \end{equation*}
 \end{exercise}
 
+\begin{exercise}{3}
+    Let $R = V(G) \setminus (S_e \cup S_o)$.
+
+    First consider the existence of a solution. A solution exists exactly when
+    there exists some $T$ with $S_o \subseteq T \subseteq S_o \cup R$ such that
+    there exists a $T$-join in $G$. Existence of a $T$-join is equivalent (as we
+    showed in the lectures) to each connected component of $G$ containing even
+    number of vertices from $T$. Putting these two together, we get that a
+    solution exists exactly when for every connected component $C$ of $G$ one of
+    the following holds
+    \begin{itemize}
+        \item{$|C \cap S_o|$ odd, or}
+        \item{$|C \cap S_o|$ even and $|C \cap R| > 0$.}
+    \end{itemize}
+    In the first case we have a $(C \cap S_o)$-join in component $C$ and in the
+    second case we have a $((C \cap S_o) \cup \{r\})$-join, where $r \in C \cap
+    R$ any.
+
+    Next we contract $R$ into a single vertex, call it $r$, and define edge weights in the
+    following way:
+
+    \[
+        c'(e) = \begin{cases}
+            \min_{u' \in R} c(\{u', v\})  & \text{if $e = \{u, v\} \in \delta(r)$
+            (WLOG $u = r$)} \\
+            c(e) & \text{else}
+        \end{cases}
+    \]
+
+    Call this graph $G'$.
+
+    Then, if $|S_o|$ is odd, solve MINIMUM WEIGHT $(S_o \cup \{r\})$-JOIN
+    PROBLEM in graph $G'$. Otherwise solve MINIMUM WEIGHT $S_o$-JOIN PROBLEM in
+    graph $G'$.
+
+    Let $J' \subseteq E(G')$ be a solution to any one of the above problems.
+    Define $J$ in the following way:
+
+    Add every edge $e \in J'$, with $e \notin \delta(r)$, to $J$. For every edge
+    $e = \{r, v\}$ add an edge $\{u, v\}$ to $J$, where $u$ is one of
+    $\argmin_{u' \in R} c(\{u', v\})$.
+
+
+\end{exercise}
+
 \end{document}
