@@ -93,13 +93,12 @@
     Next we contract $R$ into a single vertex, call it $r$, and define edge weights in the
     following way:
 
-    \[
+    \begin{equation*}
         c'(e) = \begin{cases}
-            \min_{u' \in R} c(\{u', v\})  & \text{if $e = \{u, v\} \in \delta(r)$
-            (WLOG $u = r$)} \\
+            \min_{u' \in R} c(\{u', v\})  & \text{if $e = \{r, v\}$} \\
             c(e) & \text{else}
         \end{cases}
-    \]
+    \end{equation*}
 
     Call this graph $G'$.
 
@@ -112,9 +111,33 @@
 
     Add every edge $e \in J'$, with $e \notin \delta(r)$, to $J$. For every edge
     $e = \{r, v\}$ add an edge $\{u, v\}$ to $J$, where $u$ is one of
-    $\argmin_{u' \in R} c(\{u', v\})$.
+    $\argmin_{u' \in R} c(\{u', v\})$. Clearly we have $c(J) = c'(J')$.
 
+    Then $J$ is clearly a partial $(S_o, S_e)$-join. Let us show it is indeed
+    minimum weight.
 
+    Take any partial $(S_o, S_e)$-join $I$.
+
+    We can make the following assumptions:
+    \begin{itemize}
+        \item{We can assume $I$ does not contain any edges in $G[R]$. Otherwise
+            we could remove them and not increase the weight of $I$.}
+        \item{Also, if for some vertex $v \notin R$ we had two $e, e' \in I
+            \cap \delta(v)$, otherwise we could remove $e$ and $e'$ from $I$ and 
+            not increase the weight by doing so.}
+        \item{We can assume that for each edge $e = \{u, v\} \in I$ where $u \in R$
+            and $v \notin R$ we have $u \in \argmin_w c(\{w, v\})$. Otherwise
+            replace $\{u, v\}$ with $\{u', v\}$, where $u' \in \argmin_w c(\{w,
+            v\})$. Clearly by doing so we do not increase the weight of $I$.}
+    \end{itemize}
+    In all above modifications it is also clear that $I$ stays partial $(S_o,
+    S_e)$-join, since we only change the degrees of vertices in $R$.
+
+    Again contract whole $R$ into a single vertex $r$ and define prices same as
+    before, again name the graph $G'$. By assumptions above, the price of $I'
+    \subseteq G'$ is equal to that of $I$. Then $c'(J) \leq c'(I)$. And thus
+    also $c(J) = c'(J') \leq c'(I') = c(I)$. So above constructed $J$ was indeed
+    minimum weight partial $(S_o, S_e)$-join.
 \end{exercise}
 
 \end{document}
