@@ -34,4 +34,187 @@
     j \in T$.
 \end{exercise}
 
+\begin{exercise}{3}
+    % Lets start with necessity.
+    % Let $f$ be a perfect $b$-matching in $(G, u)$.
+    % Suppose we have disjoint $X, Y \subseteq V(G)$ for which number of connected
+    % components $C$, with $b(C) + u(E_G(V(C), Y))$ odd, exceeds
+    % \begin{equation*}
+    %     \sum_{v \in X} b(v) + \sum_{y \in Y} \left( \sum_{e \in \delta(y)} u(e)
+    %     - b(y) \right) - \sum_{e \in E_G(X, Y)} u(e).
+    % \end{equation*}
+    % Rewrite this expression as
+    % \begin{equation*}
+    %     b(X) - (b(Y) - 2 u(equationE(G[Y])) + u(\delta(Y)) - u(E_G(X, Y)))
+    % \end{equation*}
+    
+    We can translate this problem (deciding whether perfect $b$-matching exists)
+    to the problem of perfect matching using constructions we used in the
+    lectures to prove theorem about $b$-matching polytopes. First we have to
+    encode $u$ into vertex bounds, by subdividing the edges and setting $b$ on
+    the new middle vertices to be equal to the edge capacity of the edge that we
+    subdivided. And secondly we have to somehow get a graph with $b \equiv 1$,
+    which we do by replacing every vertex $v$ in this graph by $b(v)$ vertices
+    and replace every edge $e = \{u, v\}$ by a full bipartite graph between set
+    of vertices that replaced $u$ and set of vertices that replaced $v$.
+
+    Notation:
+    Let $G$ be the original graph and $\tilde{G}$ the graph we get after these
+    two transformations. We have vertices
+    \begin{multline*}
+        V(\tilde{G}) = \{ (v, i) \mid v \in V(G), i \in [b(v)] \} \cup \\
+        \cup \{ ((e, u), i), ((e, v), i) \mid e = \{u, v\} \in E(G), i \in [u(e)] \}
+    \end{multline*}
+    and edges 
+    \begin{multline*}
+        E(\tilde{G}) = \{ \{ (v, i), ((e, v), j) \} \mid v \in V(G), e \in
+        \delta(v), i \in [b(v)], j \in [u(e)] \} \cup \\
+        \cup \{ \{ ((e, u), i), ((e, v), i) \} \mid e = \{u, v\} \in E(G), i \in [u(e)] \}
+    \end{multline*}
+
+    % TODO equivalence of G having a perfect b-matching and \tilde{G} having a
+    % perfect matching
+
+    We show that sets $X, Y \subseteq V(G)$ disjoint and violating the property
+    described in the exercise exist if and only if there exists a set $Z \subseteq
+    \tilde{G}$ violating the Tutte condition (in graph $\tilde{G}$).
+
+    Suppose first that there exist $X, Y \subseteq V(G)$ disjoint which violate
+    the condition described in the exercise. We want to define a set $Z
+    \subseteq V(\tilde{G})$, for which number of odd components in $G - Z$ will
+    be greater than size of $Z$ (failing Tutte condition). The expression in the
+    exercise already hints what to take. Namely we take:
+    \begin{equation*}
+        Z = \{ (v, i) \in \tilde{G} \mid v \in X, i \in [b(v)] \} \cup \{ ((e, v), i) \in
+        \tilde{G} \mid v \in Y, e \in \delta(v), i \in [u(e)] \}.
+    \end{equation*}
+    This amounts to exactly $\sum_{v \in X} b(v) + \sum_{y \in Y} \sum_{e \in
+    \delta(y)} u(e)$ vertices. It is not exactly like the expression in the
+    exercise, but the difference will be made up by new odd components
+    (singletons even), arising from vertices $(v, i) \in \tilde{G}$ for $v \in
+    Y$ and from vertices $((e, u), i) \in \tilde{G}$ for $u \in X$.
+
+    By assumption there is an odd number of components $C$ in $G - X - Y$ with
+    $\sum_{v \in C} b(v) + \sum_{e \in E_G(V(C), Y)} u(e)$, each of which
+    corresponds to an odd connected component in $\tilde{G} - Z$. The component
+    $\tilde{C} \subseteq \tilde{G}$ it corresponds to, has
+    \begin{equation*}
+        \sum_{v \in C} \sum_{i \in [b(v)]} 1 + \sum_{e \in E_G(V(C), Y)} \sum_{i
+        \in [u(e)]} 1 + 2 \sum_{e \in E_G(V(C), X)} \sum_{i \in [u(e)]} 1
+    \end{equation*}
+    vertices.
+    The last summand is even, so it does not change the parity.
+
+    But as mentioned above, we actually get more odd components in $\tilde{G}$
+    than we had in $G$. Namely, every $(v, i) \in \tilde{G}$ for $v \in Y$ is an
+    isolated vertex in $\tilde{G} - Z$, since all $((e, v), i) \in Z$ for $e
+    \in \delta(v)$. And, for every $e \in E_G(X, Y)$ we have isolated vertices
+    $((e, u), i)$ for $u \in X$, since all $(u, i) \in Z$ and $((e, v), i) \in
+    Z$ where $e = \{u, v\}$. Summing all odd components, we get that
+    there is strictly more than
+    \begin{equation*}
+        \sum_{v \in X} b(v) + \sum_{y \in Y} \left( \sum_{e \in \delta(y)} u(e)
+        - b(y) \right) - \sum_{e \in E_G(X, y)} u(e) + \sum_{y \in Y} b(y) +
+        \sum_{e \in E_G(X, y)} u(e)
+    \end{equation*}
+    which simplifies to 
+    \begin{equation*}
+        \sum_{v \in X} b(v) + \sum_{y \in Y} \sum_{e \in \delta(y)} u(e).
+    \end{equation*}
+    But this is exactly the size of $Z$. So $\tilde{G}$ does not have a perfect
+    matching and therefore $G$ does not have a perfect $b$-matching.
+
+    Now assume $G$ does not have a perfect $b$-matching. Therefore $\tilde{G}$
+    does not a perfect matching. So by Tutte's theorem we have a set of vertices
+    $Z$ that is violating Tutte condition. We will first make a series of
+    assumptions about $Z$, effectively modifying it into a specific form, and
+    construct $X$ and $Y$ from it.
+    %TODO add assumption that Z is maximal in terms of the difference
+
+    If $(v, i) \in Z$, then $\forall j \in [b(v)] \colon (v, j) \in Z$. We can
+    assume this, because if $(v, j) \notin Z$, then removing all $(v, i)$ from
+    $Z$ does not join any components that were previously disconnected. Though
+    it may change an odd component into an even component, that is mitigated by
+    removing a vertex from $Z$.
+
+    % We can assume
+    % \begin{itemize}
+    %     \item{
+    %             If $(v, i) \in Z$, then $\forall j \in [b(v)] \colon (v, j) \in
+    %             Z$. We can assume this, because if $(v, j) \notin Z$, then
+    %             removing all $(v, i)$ from $Z$ does not join any components that
+    %             were previously disconnected. Though it may change an odd
+    %             component into an even component, that is mitigated by removing
+    %             a vertex from $Z$.
+    %             %TODO formally
+    %         }
+    %     \item{
+    %             If $e = \{u, v\} \in G$ and $(u, i), (v, i) \in Z$, then we can
+    %             assume $((e, v), j), ((e, u), j) \notin Z$ for any $j$. Here we
+    %             have a connected component consisting of vertices $\{((e, v),
+    %             j), ((e, u), j) \mid j \in [u(e)]\}$ that is a full bipartite
+    %             graph and both vertex sets have the same cardinality. This
+    %             clearly has a perfect matching, so any set of vertices we would
+    %             pick, we couldn't get more components that the cardinality of the
+    %             set. So we can assume we do not pick any vertices.
+    %         }
+    %     \item{
+    %             If $e = \{u, v\} \in G$ and $(u, i), (v, i) \notin
+    %             Z$ and $((e, u), i) \in Z$
+    %         }
+    % \end{itemize}
+
+    Then we can define
+    \begin{equation*}
+        X = \{ v \in V(G) \mid (v, i) \in Z\ \text{for some $i \in [b(v)]$} \}
+    \end{equation*}
+    and
+    \begin{equation*}
+        Y = \{ v \in V(G) \mid (v, i)\ \text{isolated vertex in $\tilde{G} -
+        Z$ for some $i \in [b(v)]$} \}.
+    \end{equation*}
+    
+    Note that $(v, i) \in \tilde{G}$ (for some $i$) is isolated if and only if
+    $(v, j)$ is isolated for all $j$. Clearly both are equivalent to $Z$
+    containing all vertices of the form $((e, v), \_) \in \tilde{G}$, where $e
+    \in \delta(v) \subseteq G$. And that $(v, i) \in Z$ (for some $i$) if and
+    only if $(v, j) \in Z$ for all $j$.
+
+    Now all we have to show is that these $X$ and $Y$ fail the condition
+    described in the exercise.
+
+    Let $C$ be a connected component in $\tilde{G} - Z$.
+    
+    We can make the following assumptions about vertices in $C$ (modifying $Z$ a
+    little if necessary):
+
+    Let $e = \{u, v\} \in E_G(V(C),
+    X)$ (with $v \in X$). Then we can assume $((e, u), i), ((e, v), i) \in Z$
+    for all $i \in [u(e)]$. If not, we could simply remove all of them and not
+    decrease the difference $q_{\tilde{G}}(Z) - |Z|$. In this case only
+    interesting situation would be when $Z$ would contain $((e, u), i)$ for all
+    $i \in [u(e)]$, and we would thus have $((e, v), i)$ be an isolated vertex
+    in $\tilde{G} - Z$ for all $i$. But losing $u(e)$ isolated vertices is
+    mitigated by removing $u(e)$ elements from $Z$.
+
+    Let $e = \{u, v\} \in E_G(V(C), Y)$ (with $v \in Y$). Then by definition
+    $((e, v), i) \in Z$ for all $i \in [u(e)]$. And we can further assume $((e,
+    u), i) \notin Z$ for all $i \in [u(e)]$, removing them if necessary. Since
+    $(u, i)$ are not isolated, we do not join any (previously disconnected)
+    components, but we may make the component $C$ not be of odd parity anymore,
+    which is mitigated by removing a vertex from $Z$.
+
+
+
+    % By changing
+    % the expression in the exercise we can change it to something that will
+    % clearly reveal how to define $Z$.
+    % \begin{align}
+    %     \sum_{v \in X} b(v) + \sum_{y \in Y} \left(\sum_{e \in \delta(y)} u(e) -
+    %     b(y) \right) - \sum_{e \in E_G(X, Y)} u(e) = \\
+    %     = \sum_{v \in X} b(v) - \sum_{y \in Y} b(y) \left(\sum_{e \in \delta(y)} u(e) -
+    %     b(y) \right) - \sum_{e \in E_G(X, Y)} u(e) = \\
+    % \end{align}
+\end{exercise}
+
 \end{document}
