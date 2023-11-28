@@ -183,27 +183,103 @@
     Now all we have to show is that these $X$ and $Y$ fail the condition
     described in the exercise.
 
-    Let $C$ be a connected component in $\tilde{G} - Z$.
+    Let $C$ be a connected component in $\tilde{G} - Z$ with $|C| > 1$.
     
-    We can make the following assumptions about vertices in $C$ (modifying $Z$ a
+    We can make the following assumptions about form of $C$ (modifying $Z$ a
     little if necessary):
 
-    Let $e = \{u, v\} \in E_G(V(C),
-    X)$ (with $v \in X$). Then we can assume $((e, u), i), ((e, v), i) \in Z$
-    for all $i \in [u(e)]$. If not, we could simply remove all of them and not
-    decrease the difference $q_{\tilde{G}}(Z) - |Z|$. In this case only
-    interesting situation would be when $Z$ would contain $((e, u), i)$ for all
-    $i \in [u(e)]$, and we would thus have $((e, v), i)$ be an isolated vertex
-    in $\tilde{G} - Z$ for all $i$. But losing $u(e)$ isolated vertices is
-    mitigated by removing $u(e)$ elements from $Z$.
+    \begin{itemize}
+        \item{By earlier assumption we have that if $(v, i) \in C$ for some $i \in
+        [b(v)]$, then $(v, j) \in C$ for all $j \in [b(v)]$.}
 
-    Let $e = \{u, v\} \in E_G(V(C), Y)$ (with $v \in Y$). Then by definition
-    $((e, v), i) \in Z$ for all $i \in [u(e)]$. And we can further assume $((e,
-    u), i) \notin Z$ for all $i \in [u(e)]$, removing them if necessary. Since
-    $(u, i)$ are not isolated, we do not join any (previously disconnected)
-    components, but we may make the component $C$ not be of odd parity anymore,
-    which is mitigated by removing a vertex from $Z$.
+        \item{Let $e = \{u, v\} \in E_G(V(C), X)$ (with $v \in X$). Then we can
+            assume that $((e, u), i), ((e, v), i) \in Z$ for all $i \in [u(e)]$.
+            If not, we could simply remove all of them and not decrease the
+            difference $q_{\tilde{G}}(Z) - |Z|$. In this case only interesting
+            situation would be when $Z$ would contain $((e, u), i)$ for all $i
+            \in [u(e)]$, and we would thus have $((e, v), i)$ be an isolated
+            vertex in $\tilde{G} - Z$ for all $i$. But losing $u(e)$ isolated
+            vertices is mitigated by removing $u(e)$ elements from $Z$.}
 
+        \item{Let $e = \{u, v\} \in E_G(V(C), Y)$ (with $v \in Y$). Then by
+            definition $((e, v), i) \in Z$ for all $i \in [u(e)]$. And we can
+            further assume $((e, u), i) \notin Z$ for all $i \in [u(e)]$,
+            removing them if necessary. Since $(u, i)$ are not isolated in
+            $\tilde{G} - Z$, we do not join any (previously disconnected)
+            components, but we may make the component $C$ not be of odd parity
+            anymore, which is mitigated by removing a vertex from $Z$.}
+
+        \item{Let $e = \{u, v\} \in E(\tilde{G}[C])$. Then we can assume $((e,
+            v), i), ((e, u), i) \notin Z$ for all $i \in [u(e)]$. Clearly
+            removing these vertices does not join any (previously disconnected)
+            components, since all neighbors of these vertices are contained in
+            component $C$, more precisely: $N(((e, v), i)) \setminus Z \subseteq
+            C$ and $N(((e, u), i)) \setminus Z \subseteq C$ for all $i$. But
+            again, removing vertices $((e, v), i)$ and $((e, u), i)$ may change
+            the parity of component, but that is again mitigated by removing a
+            vertex from $Z$.}
+    
+        \item{Let $e = \{u, v\} \in E(G)$ with $(u, i) \in C$ and $(v, i) \in
+            C'$ for some other component $C'$ with $|C'| > 1$. Then we can
+            remove $((e, v), i), ((e, u), i) \in Z$ for all $i \in [u(e)]$. This
+            way we connect two previously distinct components and thus lose at
+            most $2$ odd components. If we remove at least $2$ vertices, thats
+            no problem. But if there existed was only one $((e, w), i) \in Z$
+            ($w \in \{u, v\}$), then after removing $((e, w), i)$ still have $1$
+            odd component. So in no cases do we decrease the difference
+            $q_{\tilde{G}}(Z) - |Z|$. That means two vertices $u, v \in V(G - X
+            - Y)$ are in the same component exactly when $(u, i)$ and $(v, j$
+            are in the same component in $\tilde{G} - Z$ for any pair $i,j$.}
+    \end{itemize}
+
+    Because of the last assumption, we know that every connected component in
+    $G - X - Y$ corresponds to exactly one connected component $C$ in $\tilde{G}
+    - Z$ with $|C| > 1$.
+
+    So after these assumptions components $C$ have a much simpler form, while
+    still violating Tutte condition in $\tilde{G}$. Let $C$ be a connected
+    component with $|C| > 1$ (avoid those components that come from vertices of $Y$
+    and vertices from edges between $X$ and $Y$). Then we calculate
+    \begin{multline*}
+        |V(C)| = \sum_{\substack{v \in V(G)\\ (v, i) \in C}} b(v) + 2
+        \sum_{\substack{e = \{u, v\} \in E(G)\\ (u, i), (v, i) \in C}} u(e) + 2
+        \sum_{\substack{e = \{u, v\} \in E(G)\\ (u, i) \in C, (v, i) \in Z}}
+        u(e) + \\
+        + \sum_{\substack{e = \{u, v\} \in E(G)\\ (u, i) \in C, v \in Y}} u(e)
+    \end{multline*}
+    Therefore component $C$ is odd exactly when $\sum_{\substack{v \in V(G)\\
+    (v, i) \in C}} b(v) + \sum_{\substack{e = \{u, v\} \in E(G)\\ (u, i) \in C,
+    v \in Y}} u(e)$ is odd.
+
+    Since connected components $C'$ in $G - X - Y$ correspond bijectively to
+    connected components $C$ in $\tilde{G} - Z$ with $|C| > 1$.
+
+    So number of connected components in $G - X - Y$ with $\sum_{\substack{v \in V(G)\\
+    (v, i) \in C}} b(v) + \sum_{\substack{e = \{u, v\} \in E(G)\\ (u, i) \in C,
+    v \in Y}} u(e)$ odd is strictly more than
+    \begin{equation*}
+        |Z| - \sum_{y \in Y} b(y) - \sum_{e \in E_G(X, Y)} u(e)
+    \end{equation*}
+
+    Calculating cardinality of $Z$:
+    \begin{equation*}
+        |Z| = \sum_{v \in X} b(v) + \sum_{y \in Y} \sum_{e \in \delta(y)} u(e)
+    \end{equation*}
+    Here we use all above assumptions concerning components.
+
+    Join these two equations and get that number of connected components in $G -
+    X - Y$ with $\sum_{\substack{v \in V(G)\\ (v, i) \in C}} b(v) +
+    \sum_{\substack{e = \{u, v\} \in E(G)\\ (u, i) \in C, v \in Y}} u(e)$ odd is
+    strictly more than
+    \begin{equation*}
+        \sum_{v \in X} b(v) + \sum_{y \in Y} \sum_{e \in \delta(y)} (u(e) -
+        b(y)) - \sum_{e \in E_G(X, Y)} u(e).
+    \end{equation*}
+
+    This finished the proof that existance of a perfect $b$-matching is
+    equivalent to condition in the exercise being satisfied for every disjoint
+    $X, Y \subseteq V(G)$.
+    
 
 
     % By changing
