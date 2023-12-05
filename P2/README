@@ -1,0 +1,22 @@
+setup_blossomv.sh:
+   Due to blossom5's licensing we are not allowed to publicly distribute it directly. Instead, you should use this
+   script to download and build it as a static library.
+
+instances, generate_random_Kn.py generate_instances.sh:
+  The instances folders contains some instances generated these two scripts.
+  If you want to generate more/new instances, you may need to install python.
+  I will generate new instances for testing, so don't overtune to this instances!
+
+src:
+  Currently contains example code for finding a minimum weight perfect matching.
+
+.compile.sh:
+  simple bash script for compiling. This also downloads and compiles the blossom5 library if necessary (using
+  setup_blossomv.sh).
+
+
+RUN: 
+     ./bin/minimum-weight-perfect-matching <dimacs-file> <output-file>
+  Example:
+     ./bin/minimum-weight-perfect-matching ./instances/K1024.dimacs solution1024.dimacs
+

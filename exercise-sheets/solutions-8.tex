@@ -1,0 +1,87 @@
+\newcommand{\sheet}{8}
+\input{Header.tex}
+
+\begin{document}
+
+\maketitle
+
+\begin{exercise}{1}
+    The algorithm is very similar to Christofides' Algorithm.
+    \begin{algorithm}
+        \caption{Metric $s$-$t$ path TSP}
+        \textbf{Input} $(K_n, c)$ a metric TSP instance and two vertices $s, t
+        \in V(K_n)$. \\
+        \textbf{Output} A Hamiltonian $s$-$t$ path of minimum weight.
+        \begin{algorithmic}[1]
+            \STATE{Compute MST T for $(K_n, c)$.}
+            \STATE{Let $W := \text{odd}(T) \triangle \{s, t\}$ be the set of odd
+                degree vertices in $T$, while adding $s$ if degree of $s$ in $T$ is
+                even and removing it if it is odd, and same for $t$.}
+            \STATE{Compute minimum weight $W$-join $J$.}
+            \STATE{Compute Eulerian $s$-$t$ path in $E(T) \cup J$. We can do
+            this because all vertices have even degree with respect to $E(T)
+            \cup J$, except $s$ and $t$.}
+            \STATE{Define $\overline{T}$ an $s$-$t$ path in Eulerian path above. More
+                specifically: add them in order of first appearance, except $t$,
+                which should be added last.}
+        \end{algorithmic}
+    \end{algorithm}
+
+    Now we show $c(\overline{T}) \leq \frac{5}{3} c(\text{OPT})$, where
+    $\text{OPT}$ is minimum weight Hamiltonian $s$-$t$ path in $(K_n, c)$.
+
+    Since $\text{OPT}$ is a tree, we have $c(T) \leq c(\text{OPT})$.
+
+    Now we want to show $c(J) \leq \frac{2}{3} c(\text{OPT})$.
+    It suffices to show $3 c(J) \leq c(T) + c(\text{OPT})$.
+    We want to show we can find $3$ disjoint $W$-joins in the disjoint union
+    $E(T) \sqcup E(\text{OPT})$.
+
+    For every vertex $w \in W$ we have $\deg_{E(T) \sqcup
+    E(\text{OPT})}(w) \geq 3$ and odd:\\
+    If $w \notin \{s, t\}$, then $\deg_{E(\text{OPT})}(w) = 2$ and
+    $\deg_{E(T)}(w) \geq 1$ odd.\\
+    If $w \in \{s, t\}$, then $\deg_{E(\text{OPT})}(w) = 1$. By definition of
+    $W$ we have $w \notin \text{odd}(T)$, so also $\deg_{E(T)}(w) \geq 2$ even.
+
+    First we construct one $W$-join along the path $\text{OPT}$.
+    This we can do by ordering $W = \{w_1, \dots, w_{2k}\}$ in the order in
+    which they appear on the path $\text{OPT}$. Then simply take segments from
+    $w_{2i - 1}$ to $w_{2i}$ for $i = 1, \dots k$.
+
+    We can now remove these segments from $E(T) \sqcup E(\text{OPT})$, to obtain
+    $E'$.
+    By arguments above, every vertex in $W$ now has even degree $\geq 2$ with
+    respect to $E'$. This means there exists a Eulerian tour in in $E'$, which
+    we can split into to $W$-joins by taking alternating segments.
+
+    Each of these three joins has cost greater or equal to $c(J)$, so $3c(J)
+    \leq c(\text{OPT}) + c(T) \leq 2 c(\text{OPT})$.
+    So
+    \begin{equation*}
+        c(\overline{T}) \leq c(T) + c(J) \leq c(\text{OPT}) + \frac{2}{3}
+        c(\text{OPT}) \leq \frac{5}{3} c(\text{OPT})
+    \end{equation*}
+\end{exercise}
+
+\begin{exercise}{2}
+    We can show this by using formulation in exercise $4$.
+
+    %TODO what if u is infinite and thus P not necessarily bounded
+    If bounds $u$ are finite, then $P$ is bounded. It is also clearly closed, so
+    it is compact.
+
+    Condition (i): if $0 \leq x \leq y \in P$, we have $s$-$t$ flow $f$ with
+    $f(e) = y_e$ for all $e \in U$. We can reduce this flow $f$ along $s$-$t$
+    paths to obtain $f(e) = x_e$ on each $e \in U$. So $x \in P$.
+
+    Condition (ii): let $x \in \R^U_+$ with $y, z \in P$ and $y, z \leq x$, such
+    that $y$ and $z$ are maximal such. We have to show that flows $f$ and $g$,
+    corresponding to $y$ and $z$ respectively are maximum flows. Suppose there
+    excists an augmenting $s$-$t$ path for either flow. Since its a path, it
+    does not return to $s$, and thus it can only contain one edge $e \in U$. But
+    this violates maximality of $y$ and $z$. Therefore $f$ and $g$ are both
+    maximum flows and thus $\mathbb{1} y = \mathbb{1} z$.
+\end{exercise}
+
+\end{document}
