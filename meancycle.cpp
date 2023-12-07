@@ -48,7 +48,7 @@ namespace MMC
 			}
 			for (NodeId v; v<num_nodes(); v++)
 			{
-			p=Shortestpath(v, _outgoing_halfedges,weight);
+			p=Shortestpath(v);
 					
 			}
 			
