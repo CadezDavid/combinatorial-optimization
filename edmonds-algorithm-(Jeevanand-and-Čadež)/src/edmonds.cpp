@@ -3,16 +3,25 @@
 #include <deque>
 #include <numeric>
 
-#include "graph.cpp"
+#include "edmonds.hpp"
 
 namespace ED {
+
+GraphEdmonds::GraphEdmonds(NodeId const num_nodes)
+    : Graph(num_nodes), mu(num_nodes), phi(num_nodes), ro(num_nodes),
+      root(num_nodes) {}
+
+GraphEdmonds GraphEdmonds::read_dimacs(std::istream &input) {
+  Graph graph = Graph::read_dimacs(input);
+  return GraphEdmonds(
+}
 
 /**
  * Shrinks the blossom, created by an edge u-v.
  * @param nodes v and u, which lie in the same tree, meaning root[v] == root[u]
  * @return void
  */
-void Graph::shrink(NodeId v, NodeId u) {
+void GraphEdmonds::shrink(NodeId v, NodeId u) {
   // These will be bases of blossoms on paths from v and u to their root
   // (which we are assuming to be the same!).
   std::vector<NodeId> p_v = {ro[v]};
@@ -61,7 +70,7 @@ void Graph::shrink(NodeId v, NodeId u) {
       ro[z] = r;
 }
 
-void Graph::grow(NodeId v, NodeId u) {
+void GraphEdmonds::grow(NodeId v, NodeId u) {
   phi[u] = v;
 
   // Define root of new nodes accordingly.
@@ -69,7 +78,7 @@ void Graph::grow(NodeId v, NodeId u) {
   root[mu[u]] = root[v];
 }
 
-void Graph::augment(NodeId v, NodeId u) {
+void GraphEdmonds::augment(NodeId v, NodeId u) {
   // In this part we use loops to change values of mu along the paths v-root[v]
   // and u-root[u], effectively augmenting the matching along the path
   // root[v]-v-u-root[u].
@@ -95,7 +104,7 @@ void Graph::augment(NodeId v, NodeId u) {
   mu[u] = v;
 }
 
-std::vector<NodeId> Graph::edmonds() {
+std::vector<NodeId> GraphEdmonds::edmonds() {
   // A dequeue that will hold all outer nodes that have to be checked.
   // Sometimes we add to the front, sometimes to the back, which we decided
   // based on intuition how quickly should the node be checked. But in the end

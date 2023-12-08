@@ -1,8 +1,7 @@
 #include <fstream>  // For reading input files.
 #include <iostream> // For writing to the standard output.
 
-#include "edmonds.cpp"
-#include "graph.cpp"
+#include "edmonds.hpp"
 
 int main(int argc, char **argv) {
   if (argc != 2) {
@@ -11,11 +10,11 @@ int main(int argc, char **argv) {
   }
 
   std::fstream input_file_graph{argv[1]};
-  ED::Graph graph = ED::Graph::read_dimacs(input_file_graph);
+  ED::Graph graph = ED::GraphEdmonds::read_dimacs(input_file_graph);
 
   std::vector<ED::NodeId> mu = graph.edmonds();
 
-  ED::Graph matching_subgraph = ED::Graph(graph.num_nodes());
+  ED::GraphEdmonds matching_subgraph = ED::GraphEdmonds(graph.num_nodes());
   for (ED::NodeId i = 0; i < mu.size(); i++)
     if (i < mu[i])
       matching_subgraph.add_edge(i, mu[i]);

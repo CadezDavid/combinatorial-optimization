@@ -4,16 +4,16 @@ OPTLIBEXT=-O
 DEBUGLIBEXT=-g
 LIBEXTS=$(OPTLIBEXT) $(DEBUGLIBEXT)
 
-ifeq "$(MAKECMDGOALS)" "debug"
-   LIBEXT=$(DEBUGLIBEXT)
-   OPTFLAGS=$(OPTFLAGS_DEBUG)
-else
+ifeq "$(MAKECMDGOALS)" "opt"
    LIBEXT=$(OPTLIBEXT)
    OPTFLAGS=$(OPTFLAGS_OPT)
+else
+   LIBEXT=$(DEBUGLIBEXT)
+   OPTFLAGS=$(OPTFLAGS_DEBUG)
 endif
 
-CXX=g++
-CC=gcc
+CXX=clang++
+CC=clang
 LN=ln
 RM=rm
 MKDIR=mkdir
@@ -48,8 +48,7 @@ EXECUTABLE=$(LINK_NAME)$(LIBEXT)
 
 # Collect files to be compiled
 
-# CXX_SRCS=$(foreach ext, $(CXX_SRC_EXTS), $(shell find . -name "*.$(ext)"))
-CXX_SRCS=main.cpp
+CXX_SRCS=$(foreach ext, $(CXX_SRC_EXTS), $(shell find . -name "*.$(ext)"))
 C_SRCS=$(foreach ext, $(C_SRC_EXTS), $(shell find . -name "*.$(ext)"))
 SRCS=$(CXX_SRCS) $(C_SRCS)
 OBJS=$(foreach ext, $(SRC_EXTS), $(patsubst %.$(ext), $(BUILDDIR)/%$(LIBEXT).o, $(filter %.$(ext), $(SRCS))))
@@ -116,7 +115,7 @@ $(EXECUTABLE):  $(OBJS) | $(BUILDDIR)
 
 # Create link in opt/debug target
 opt debug:
-	$(LN) -sf $(EXECUTABLE) $(EXECUTABLE_REL)
+	$(LN) -sf $(EXECUTABLE_REL)$(LIBEXT) $(LINK_NAME)
 
 check: $(BUILDDIR)
 	@forbidden=$$(find $(BUILDDIR) -not -type d $(foreach filext, .o .d, -not -name "*$(filext)") $(foreach libext, $(LIBEXTS) "", -not -name "$(EXECUTABLE_REL)$(libext)")); \
@@ -130,4 +129,3 @@ $(MAKECONFIG):
 
 clean:
 	@$(RM) -rf $(BUILDDIR)
-	@$(RM) $(EXECUTABLE_REL)
