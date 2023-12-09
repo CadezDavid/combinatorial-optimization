@@ -74,7 +74,6 @@ MMC::Graph min_join(MMC::Graph &graph, double gamma) {
   for (MMC::NodeId u{0}; u < num_nodes; u++) {
     for (MMC::NodeId v{u + 1}; v < num_nodes; v++) {
       if (solver.GetSolution(counter)) {
-        std::vector<MMC::EdgeId> cur_path{};
         MMC::NodeId u_g = conv[u];
         MMC::NodeId v_g = conv[v];
         while (u_g != v_g) {
@@ -88,7 +87,7 @@ MMC::Graph min_join(MMC::Graph &graph, double gamma) {
     }
   }
 
-  MMC::Graph solution{graph.num_nodes()};
+  MMC::Graph solution(graph.num_nodes());
   for (MMC::NodeId v{0}; v < graph.num_nodes(); v++) {
     for (MMC::EdgeId e : graph.node(v).outgoing_halfedges()) {
       if (t_join[e / 2] != (graph.halfedge_weight(e) < gamma))
