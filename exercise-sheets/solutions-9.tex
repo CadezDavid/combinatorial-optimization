@@ -1,0 +1,146 @@
+\newcommand{\sheet}{9}
+\input{Header.tex}
+
+\begin{document}
+
+\maketitle
+
+\begin{exercise}{1}
+    
+    Let $U$ be a finite set. Define a condition for $f \colon 2^U \to \R$ that
+    \begin{equation}\label{condition}
+        f(X \cup \{y, z\}) - f(X \cup \{y\}) \leq f(X \cup \{z\}) - f(X)
+    \end{equation}
+    for every $X \subseteq U$ and $y, z \in U$ with $y \not= z$.
+
+    If $f$ is submodular, then condition~\ref{condition} follows from the
+    definition of submodularity by setting one set to be $X \cup \{y\}$ and
+    other $X \cup \{z\}$.
+
+    Suppose now $f$ satisfies condition~\ref{condition}.
+    Take $X, Y \subseteq U$. We are trying to show
+    \begin{equation*}
+        f(X \cup Y) + f(X \cap Y) \leq f(X) + f(Y).
+    \end{equation*}
+    We do induction on $n = |X \setminus Y| + |Y \setminus X|$.
+    % Observe that 
+    % \begin{equation*}
+    %     f(X \cup \{y_1, y_2, z\}) - f(X \cup \{y_1, y_2\}) \leq f(X \cup \{y_1,
+    %     z\}) - f(X \cup \{y_1\}) \leq f(X \cup \{z\}) - f(X)
+    % \end{equation*}
+    % which demonstrates that 
+    % \begin{equation*}
+    %     f(X \cup Y \cup \{z\}) - f(X \cup Y) \leq f(X \cup \{z\}) - f(X)
+    % \end{equation*}
+    % for any $Y \subseteq U$ with $z \notin Y$.
+
+    If $X \subseteq Y$ or $Y \subseteq X$, then the statement holds.
+
+    Assume now that the statement holds for $k < |X \setminus Y| + |Y \setminus
+    X| = n$.
+    Take $x \in X \setminus Y$. By induction hypothesis we have
+    \begin{equation}\label{ineq1}
+        f((X \setminus \{x\}) \cup Y) + f(X \cap Y) \leq f(X \setminus \{x\}) + f(Y).
+    \end{equation}
+
+    By condition~\ref{condition} we also have the following chain of
+    inequalities
+    \begin{equation}\label{ineq2}
+    \begin{split}
+        f(X \cup Y) - f((X \setminus \{x\}) \cup Y) &\leq f(X \cup Y_{n-1}) -
+        f((X \cup Y_{n-1} \setminus \{x\}) \\
+        &\leq \dots \\
+        &\leq f(X \cup Y_2) - f((X \cup Y_2) \setminus \{x\}) \\
+        &\leq f(X \cup Y_1) - f((X \cup Y_1) \setminus \{x\}) \\
+        &\leq f(X) - f(X \setminus \{x\}).
+    \end{split}
+    \end{equation}
+    where $Y = \{y_1, \dots, y_n\}$ and $Y_i = \{y_1, \dots, y_i\}$.
+
+    Summing~\ref{ineq1} and~\ref{ineq2} yields
+    \begin{equation*}
+        f(X \cup Y) + f(X \cap Y) \leq f(X) + f(Y),
+    \end{equation*}
+    which is what we wanted to show.
+\end{exercise}
+
+\begin{exercise}{3}
+    Let $B_f$ denote the base polyhedron of $f$.
+
+    Take some total order $\prec$ of $U$. We show that $b^\prec$ is a
+    vertex of $U$.
+
+    First we show that $b^\prec \in B_f$.
+    Take some $A \subseteq U$.
+    By definition
+    \begin{equation*}
+        b^\prec (A) = \sum_{a \in A} f(U_{\preceq a}) - f(U_{\preceq a}).
+    \end{equation*}
+    From the first exercise it follows that
+    \begin{equation*}
+        f(U_{\preceq a}) - f(U_{\preceq a}) \leq f(A_{\preceq a}) - f(A_{\preceq a})
+    \end{equation*}
+    for every $a \in
+    A$. So we have
+    \begin{equation*}
+        b^\prec (A) = \sum_{a \in A} f(U_{\preceq a}) - f(U_{\preceq
+        a}) \leq \sum_{a \in A} f(A_{\preceq a}) - f(A_{\preceq a}),
+    \end{equation*}
+    which is a telescoping sum that simplifies to $f(A)$ (using $f(\emptyset)
+    = 0$).
+
+    If $A = U$, the estimation is not necessary and we have
+    \begin{equation*}
+        b^\prec (U) = \sum_{a \in U} f(U_{\preceq a}) - f(U_{\preceq a}) = f(U).
+    \end{equation*}
+
+    So we've shown $b^\prec \in B_f$.
+
+    Take any $c \in \R^U$. We will show that there exists a total order $\prec$
+    for which $b^\prec$ lies in the face defined by $c$.
+
+    Define total order $U = \{u_1, \dots, u_n\}$ such that $c(u_1) \geq \dots
+    \geq c(u_n)$. Denote $c_i := c(u_i)$ and $U_i = \{u_1, \dots, u_i\}$ for every $i \in \{1,
+    \dots, n\}$ (and $U_0 = \emptyset$).
+
+    Take any $x \in B_f$.
+    We will show that $c^T b^\prec \geq c^T x$.
+    Define $d_i := c_i - c_{i+1}$. By the definition of the ordering, we
+    have $d_i \geq 0$ for all $i \in \{1, \dots, n\}$. With some reordering
+    (we also used this at some point during the lectures) we have
+    \begin{equation*}
+        c^T x = \sum^n_{i=1} c_i x_i = \sum^n_{j=1} d_j \sum^j_{i=1} x_i.
+    \end{equation*}
+    Because $x \in B_f$, $x(U_i) \leq f(U_i)$ and $x(U) = f(U)$. Putting the
+    into above equation we obtain
+    \begin{equation*}
+        \begin{split}
+            c^T x &\leq \sum^n_{j=1} d_j f(U_j) \\
+            &= c_n f(U) + \sum^{n-1}_{j=1} (c_j - c_{j+1}) f(U_j) \\
+            &= \sum^n_{j=1} c_j (f(U_{j}) - f(U_{j-1})) \\
+            &= c^T b^\prec.
+        \end{split}
+    \end{equation*}
+    So for every face $F$ of polyhedron, there exists a total order $\prec$,
+    such that $b^\prec \in F$. If $F$ happens to be a singleton, i.e. a vertex,
+    then $F = \{b^\prec\}$.
+
+    Now we have to show that for every total order $\prec$, vector $b^\prec$ is
+    a vertex. Define $c_i = n - i + 1$. Take any $x \in B_f$ with $c^T x \geq
+    c^T b^\prec$.
+    For every $i$ we have $x(U_i) \leq f(U_i)$.
+    We have
+    \begin{equation*}
+        \begin{split}
+            c^T x &= \sum^n_{j=1} \sum^j_{i=1} x_i \\
+            &\leq \sum^n_{j=1} f(U_j) \\
+            &\leq \sum^n_{i=1} c_i (f(U_i) - f(U_{i-1})) \\
+        \end{split}
+    \end{equation*}
+    By our choice of $x$, we therefore have an equality at all steps. 
+    That means inequalities $x(U_i) \leq f(U_i)$ must in fact be equalities for
+    every $i$. From that we can explicitly deduce that $x = b^\prec$. So
+    $b^\prec$ is a vertex.
+\end{exercise}
+
+\end{document}
